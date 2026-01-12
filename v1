@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praycher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+  body { font-family: 'Poppins', sans-serif; color: #212529; background-color: #f8f9fa; }
+h1 { text-align: center; margin-bottom: 10px; color: #2c3e50; font-weight: 600; font-size: 1.8em; }
+.container { padding: 15px; max-width: 700px; margin: 0 auto; }
+.list-management { display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+.list-management label { font-weight: 500; color: #2c3e50; margin-right: 5px; }
+#list-selector { padding: 6px 8px; border: 1px solid #bdc3c7; border-radius: 6px; background-color: #ffffff; color: #333; font-size: 0.9em; height: 36px; cursor: pointer; min-width: 120px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+#list-selector:focus { border-color: #3498db; outline: none; box-shadow: 0 0 4px rgba(52, 152, 219, 0.5); }
+#create-list-button, #edit-list-name-button, #delete-list-button { padding: 0; width: 28px; height: 28px; font-size: 1em; line-height: 1; color: #ffffff; border: none; border-radius: 50%; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+#create-list-button { background-color: #1abc9c; }
+#create-list-button:hover { background-color: #16a085; transform: scale(1.05); }
+#edit-list-name-button { background-color: #3498db; }
+#edit-list-name-button:hover { background-color: #2980b9; transform: scale(1.05); }
+#delete-list-button { background-color: #e74c3c; }
+#delete-list-button:hover { background-color: #c0392b; transform: scale(1.05); }
+.button-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.button-container > button, .dropdown > button { padding: 0; width: 42px; height: 42px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease-out; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.07); }
+.button-container > button:hover, .dropdown > button:hover { box-shadow: 0 2px 5px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.09); transform: translateY(-1px); }
+.button-container > button:active, .dropdown > button:active { transform: translateY(0px); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+#add-prayer-button { background-color: teal; font-size: 1.2em; box-shadow: 0 2px 4px rgba(0, 90, 90, 0.3), 0 4px 8px rgba(0, 90, 90, 0.2); }
+#add-prayer-button:hover { background-color: #006A6A; box-shadow: 0 3px 6px rgba(0, 90, 90, 0.35), 0 5px 10px rgba(0, 90, 90, 0.25); }
+#add-prayer-button:active { background-color: #005050; }
+#view-options-dropdown > button { background-color: #3498db; }
+#view-options-dropdown > button:hover { background-color: #2980b9; }
+#view-options-dropdown > button:active { background-color: #216d9c; }
+#toggle-stats-button { background-color: #27ae60; }
+#toggle-stats-button:hover { background-color: #229954; }
+#toggle-stats-button:active { background-color: #1e8449; }
+#more-actions-dropdown > button { background-color: #8e44ad; }
+#more-actions-dropdown > button:hover { background-color: #7d3c98; }
+#more-actions-dropdown > button:active { background-color: #6c3483; }
+.dropdown { position: relative; display: inline-block; }
+.dropdown-content { display: none; position: absolute; background-color: #ffffff; min-width: 180px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 10; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; padding: 5px 0; }
+.dropdown-content button { color: #333; padding: 10px 15px; text-decoration: none; display: block; width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-size: 0.9em; transition: background-color 0.2s ease; }
+.dropdown-content button:hover { background-color: #ecf0f1; }
+.dropdown-content button i { margin-right: 8px; width: 15px; text-align: center; }
+#view-answered-button-dd i { color: #2ecc71; }
+#view-not-granted-button-dd i { color: #e74c3c; }
+#view-archived-active-button-dd i { color: #7f8c8d; }
+#export-data-button-dd i { color: #7f8c8d; }
+#import-data-button-dd i { color: #7f8c8d; }
+#clear-data-button-dd i { color: #e74c3c; }
+.prayer-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+.prayer-item { border: none; padding: 15px; border-radius: 10px; background-color: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; }
+.prayer-item:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+.prayer-item p { margin: 4px 0; font-size: 0.9em; line-height: 1.4; color: #444; }
+.prayer-item strong { font-weight: 500; color: #2c3e50; }
+.status-container { text-align: center; margin-top: 8px; transition: opacity 0.3s ease; }
+.status { font-weight: 500; display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+.status:hover { transform: scale(1.03); }
+.status-no { color: #ffffff; background-color: #e74c3c; border: 1px solid transparent; }
+.status-yes { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.prayer-controls { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; opacity: 0; transition: opacity 0.3s ease; align-items: center; z-index: 5; }
+.prayer-item:hover .prayer-controls { opacity: 1; }
+.prayer-controls button, .prayer-controls .answered-icon { padding: 0; width: 26px; height: 26px; border: none; border-radius: 50%; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; color: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.prayer-controls button:hover { transform: scale(1.05); }
+.prayer-controls .delete-button { background-color: #e74c3c; }
+.prayer-controls .delete-button:hover { background-color: #c0392b; }
+.prayer-controls .edit-button { background-color: #3498db; }
+.prayer-controls .edit-button:hover { background-color: #2980b9; }
+.prayer-controls .pin-button { background-color: #f39c12; }
+.prayer-controls .pin-button:hover { background-color: #e67e22; }
+.prayer-controls .maximize-button { background-color: #95a5a6; }
+.prayer-controls .maximize-button:hover { background-color: #7f8c8d; }
+.prayer-controls .mark-answered-button { background-color: #2ecc71; }
+.prayer-controls .mark-answered-button:hover { background-color: #27ae60; }
+.prayer-controls .mark-not-granted-button { background-color: #e74c3c; }
+.prayer-controls .mark-not-granted-button:hover { background-color: #c0392b; }
+.prayer-controls .archive-active-button { background-color: #7f8c8d; }
+.prayer-controls .archive-active-button:hover { background-color: #6c7a89; }
+.prayer-item-more-options-button { display: none; padding: 0; width: 28px; height: 28px; border: none; border-radius: 50%; cursor: pointer; font-size: 1em; transition: background-color 0.3s ease, transform 0.2s ease; color: gray; background-color: lightgray; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.prayer-item-more-options-button:hover { background-color: gray; transform: scale(1.05); }
+.prayer-item-actions-dropdown { display: none; position: absolute; top: 32px; right: 0; background-color: white; min-width: 10px; box-shadow: none; z-index: 10; border-radius: 6px; border: none; padding: 5px 0; overflow: hidden; }
+.prayer-item-actions-dropdown.active { display: block; }
+.prayer-item-actions-dropdown .prayer-controls button, .prayer-item-actions-dropdown .prayer-controls .answered-icon { display: block; width: 100%; text-align: left; padding: 10px 15px; font-size: 0.9em; color: gray; background-color: lightgreen; border: none; border-radius: 0; box-shadow: none; margin-bottom: 1px; transition: background-color 0.2s ease; }
+.prayer-item-actions-dropdown .prayer-controls button:hover { background-color: gray; transform: none; }
+.prayer-item-actions-dropdown .prayer-controls button i { margin-right: 10px; width: 15px; text-align: center; color: gray; }
+.prayer-item-actions-dropdown .prayer-controls .delete-button i { color: #e74c3c; }
+.prayer-item-actions-dropdown .prayer-controls .edit-button i { color: #3498db; }
+.prayer-item-actions-dropdown .prayer-controls .pin-button i { color: #f39c12; }
+.prayer-item-actions-dropdown .prayer-controls .maximize-button i { color: #95a5a6; }
+.prayer-item-actions-dropdown .prayer-controls .mark-answered-button i { color: #2ecc71; }
+.prayer-item-actions-dropdown .prayer-controls .mark-not-granted-button i { color: #e74c3c; }
+.prayer-item-actions-dropdown .prayer-controls .archive-active-button i { color: #7f8c8d; }
+.pinned { border-left: 5px solid #f39c12; box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1); }
+#show-more-button { display: none; margin: 20px auto; padding: 10px 16px; background-color: #3498db; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; font-size: 1em; font-weight: 500; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#show-more-button:hover { background-color: #2980b9; transform: scale(1.03); }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.4); align-items: center; justify-content: center; transition: background-color 0.3s ease; }
+.modal-content { background-color: #ffffff; margin: auto; padding: 20px; border: none; width: 90%; max-width: 800px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); color: #444; transition: background-color 0.3s ease, color 0.3s ease; position: relative; }
+#add-prayer-modal .modal-content, #edit-prayer-modal .modal-content { max-width: 550px; }
+.modal-close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.3s ease; line-height: 1; padding: 0 5px; }
+.modal-close-button:hover, .modal-close-button:focus { color: #333; text-decoration: none; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
+.modal-header h2 { margin: 0; color: #2c3e50; font-size: 1.2em; }
+.modal-body { margin-bottom: 15px; }
+.modal-footer { display: flex; justify-content: flex-end; padding-top: 15px; margin-top: 15px; border-top: 1px solid #eee; }
+.answered-prayers-modal-list, .not-granted-prayers-modal-list, .archived-active-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+.answered-prayers-modal-list .prayer-item, .not-granted-prayers-modal-list .prayer-item { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: left; }
+.not-granted-prayers-modal-list .prayer-item { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.answered-prayers-modal-list .prayer-item strong, .answered-prayers-modal-list .prayer-item .prayer-category, .answered-prayers-modal-list .prayer-item p { color: #155724; }
+.not-granted-prayers-modal-list .prayer-item strong, .not-granted-prayers-modal-list .prayer-item .prayer-category, .not-granted-prayers-modal-list .prayer-item p { color: #721c24; }
+.answered-prayers-modal-list .prayer-item p, .not-granted-prayers-modal-list .prayer-item p { text-align: left; margin-left: 0; margin-right: 0; }
+.thank-you-button { background-color: #2ecc71; color: #ffffff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85em; transition: background-color: 0.3s ease; display: block; margin: 10px auto 0; width: fit-content; }
+.thank-you-button:hover { background-color: #219d52; }
+.unarchive-button { background-color: #3498db; color: #ffffff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85em; transition: background-color 0.3s ease; display: block; margin: 10px auto 0; width: fit-content; }
+.unarchive-button:hover { background-color: #2980b9; }
+.archived-active-list .prayer-item { background-color: #e9ecef; color: #495057; border: 1px solid #dee2e6; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.archived-active-list .prayer-item p { text-align: left; margin-left: 0; margin-right: 0; }
+.archived-active-list .prayer-item:hover { transform: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.archived-active-list .prayer-item .prayer-controls { display: none; }
+.archived-active-list .prayer-item strong { color: #2c3e50; }
+.archived-active-list .prayer-item p { color: #495057; }
+.archived-active-list .prayer-item p.prayer-category { color: #6c757d; }
+.archived-active-list .prayer-item .prayer-tags-container .prayer-tag { background-color: #ced4da; color: #495057; }
+.archived-active-list .prayer-item .unarchive-button { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; padding: 0; font-size: 0.9em; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: background-color 0.3s ease, transform 0.2s ease; }
+.archived-active-list .prayer-item .unarchive-button:hover { background-color: #2980b9; transform: scale(1.05); }
+.unarchive-button { background-color: #3498db; color: #ffffff; border: none; cursor: pointer; }
+.archived-active-list .prayer-item { padding-top: 35px; position: relative; }
+.archived-active-list .prayer-item p:first-of-type { margin-top: 0; }
+.history-list { list-style: none; padding: 0; }
+.history-item { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 10px 15px; margin-bottom: 10px; color: #444; text-align: left; }
+.history-item-content { display: grid; justify-items: start; gap: 2px; }
+.history-item p { margin-top: 2px; margin-bottom: 2px; font-size: 0.9em; line-height: 1.4; text-align: left; color: inherit; font-style: normal; margin-left: 0; margin-right: 0; }
+.history-item p strong { font-weight: 600; color: #2c3e50; margin-right: 4px; }
+.history-item p.prayer-category { font-size: 0.9em; color: #444; font-style: normal; }
+.history-buttons { display: flex; gap: 10px; align-items: center; }
+.history-buttons button { background-color: #95a5a6; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s ease; }
+.history-buttons button:hover { background-color: #7f8c8d; }
+.confirmation-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.4); align-items: center; justify-content: center; transition: background-color 0.3s ease; }
+.confirmation-content { background-color: #ffffff; color: #444; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); text-align: center; max-width: 400px; width: 90%; transition: background-color 0.3s ease, color 0.3s ease; position: relative; }
+#confirmation-title { margin-top: 0; margin-bottom: 10px; color: #2c3e50; font-weight: 600; }
+#confirmation-message { margin-bottom: 20px; line-height: 1.5; word-wrap: break-word; }
+#confirmation-message strong { color: #e74c3c; font-weight: 600; }
+.confirmation-buttons { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+.confirm-button, .cancel-button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; color: #ffffff; transition: background-color 0.3s ease; }
+.confirm-button { background-color: #e74c3c; }
+.confirm-button:hover { background-color: #c0392b; }
+.cancel-button { background-color: #3498db; }
+.cancel-button:hover { background-color: #2980b9; }
+#confirmation-modal .modal-close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer; transition: color 0.3s ease; line-height: 1; padding: 0 5px; }
+#confirmation-modal .modal-close-button:hover, #confirmation-modal .modal-close-button:focus { color: #333; text-decoration: none; }
+#maximized-view .modal-content { max-width: 90%; padding: 30px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; background-color: #ffffff; color: #444; text-align: left; }
+#maximized-content { flex-grow: 1; margin-bottom: 15px; }
+#maximized-content p { line-height: 1.2; margin-bottom: 10px; color: #444; transition: font-size 0.2s ease; text-align: left; }
+#maximized-content strong{ font-size: 1.2em; display: inline-block; margin-right: 0.3em; color: #2c3e50; }
+.font-size-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+.font-size-option-button { background-color: #ecf0f1; color: #34495e; border: 1px solid #bdc3c7; border-radius: 5px; padding: 8px 15px; font-size: 0.9em; font-weight: 500; cursor: pointer; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+.font-size-option-button:hover { background-color: #bdc3c7; border-color: #95a5a6; }
+.font-size-option-button.active-font-size { background-color: #3498db; color: #ffffff; border-color: #2980b9; font-weight: 600; }
+.search-filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; }
+.search-container { flex-grow: 1; min-width: 200px; }
+#search-input { width: 100%; padding: 10px 12px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 0.95em; transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease; background-color: #ffffff; color: #333; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#search-input:focus { border-color: #3498db; outline: none; box-shadow: 0 0 4px rgba(52, 152, 219, 0.5); }
+.filter-controls { display: flex; gap: 10px; flex-shrink: 0; }
+.filter-controls select { padding: 6px 8px; border: 1px solid #bdc3c7; border-radius: 6px; background-color: #ffffff; color: #333; font-size: 0.85em; height: 36px; cursor: pointer; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.filter-controls select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 4px rgba(52, 152, 219, 0.5); }
+.prayer-tags-container { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+.prayer-tag { background-color: #eee; color: #555; padding: 3px 8px; border-radius: 10px; font-size: 0.8em; font-weight: 400; }
+.priority-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1px solid rgba(0,0,0,0.1); }
+.priority-high { background-color: #e74c3c; }
+.priority-medium { background-color: green; }
+.priority-low { background-color: #3498db; }
+#journal-section { margin-top: 15px; border-top: 1px solid #bdc3c7; padding-top: 15px; }
+.journal-notes-display { max-height: 150px; overflow-y: auto; border: 1px solid #bdc3c7; border-radius: 6px; padding: 10px; margin-bottom: 10px; background-color: #f8f9fa; }
+.journal-entry { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #dee2e6; }
+.journal-entry:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.journal-entry strong { display: block; font-size: 0.85em; color: #6c757d; margin-bottom: 3px; }
+.journal-entry p { margin: 0; font-size: 0.9em; line-height: 1.4; white-space: pre-wrap; }
+#add-journal-note-button { background-color: #1abc9c; color: white; padding: 6px 12px; margin-top: 5px; font-size: 0.9em; height: auto; width: auto; margin-right: 0; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.3s ease; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#add-journal-note-button:hover { background-color: #16a085; }
+.linked-prayer-info { font-size: 0.8em; color: #6c757d; margin-top: 5px; display: block; font-style: italic; }
+.linked-prayer-info strong { font-style: normal; font-weight: 600; color: #495057; font-size: 1em; display: inline; margin-right: 0; }
+@media (min-width: 769px) { #history-list, #not-granted-history-list, .archived-active-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; } .prayer-item-more-options-button { display: none !important; } .prayer-item-actions-dropdown { display: none !important; } .prayer-item .prayer-controls > button:not(.prayer-item-more-options-button), .prayer-item .prayer-controls > .answered-icon { display: flex !important; } }
+@media (max-width: 768px) { .container { padding: 15px; width: 96%; } .prayer-list { grid-template-columns: 1fr; } .answered-prayers-modal-list, .not-granted-prayers-modal-list, .archived-active-list { grid-template-columns: 1fr; } .prayer-item .prayer-controls { opacity: 1; position: absolute; top: 8px; right: 8px; } .prayer-item .prayer-controls > button:not(.prayer-item-more-options-button), .prayer-item .prayer-controls > .answered-icon { display: none !important; } .prayer-item-more-options-button { display: inline-flex !important; } .prayer-item-actions-dropdown.active { display: block; } .prayer-item-actions-dropdown .prayer-controls { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; gap: 6px; padding: 8px; align-items: center; justify-content: flex-start; box-sizing: border-box; } .prayer-item-actions-dropdown .prayer-controls button, .prayer-item-actions-dropdown .prayer-controls .answered-icon { display: inline-flex !important; width: auto !important; flex-grow: 0; flex-shrink: 0; padding: 6px 10px; margin-bottom: 0 !important; text-align: left; border-radius: 4px; } .prayer-item-actions-dropdown .prayer-controls button i { margin-right: 5px; } .button-container { justify-content: center; } .button-container > button, .dropdown > button { margin-bottom: 10px; width: auto; min-width: 45px; height: 45px; padding-left: 10px; padding-right: 10px; font-size: 1.1em; } #add-prayer-button { font-size: 1.1em; min-width: 45px; } .modal-content { width: 95%; margin: auto; max-width: 600px; } #add-prayer-modal .modal-content, #edit-prayer-modal .modal-content { max-width: 95%; } .answered-prayers-modal-list .prayer-item, .not-granted-prayers-modal-list .prayer-item, .archived-active-list .prayer-item { text-align: left; } .history-item { padding: 10px; } .prayer-item { padding: 15px; padding-right: 40px; } }
+@media (max-width: 600px) { .search-filter-bar { gap: 10px; } .filter-controls { width: 100%; justify-content: space-between; } .filter-controls select { flex-grow: 1; width: 30%; } .view-features{ font-size: 1em; padding: 6px; width: 35px; height: 35px; } #featuresModal .modal-content { width: 90%; } .button-container > button, .dropdown > button { height: 40px; min-width: 40px; font-size: 1.1em; padding-left: 8px; padding-right: 8px; } #add-prayer-button { font-size: 1.1em; min-width: 40px; } .prayer-item-more-options-button { width: 26px; height: 26px; font-size: 1em; } .prayer-item-actions-dropdown { top: 30px; min-width: 10px; } .prayer-item-actions-dropdown .prayer-controls button { font-size: 0.85em; padding: 5px 8px; } .prayer-item-actions-dropdown .prayer-controls button i { margin-right: 2px; } .prayer-controls { gap: 6px;} .history-item p { font-size: 0.85em; } #add-prayer-modal .modal-content, #edit-prayer-modal .modal-content { padding: 15px; } #add-prayer-form button, #edit-prayer-form button { padding: 6px 12px; font-size: 1em; } .modal-footer { padding-top: 10px; margin-top: 10px; } .history-buttons button { font-size: 0.85em; padding: 4px 8px;} .prayer-item { padding-right: 35px; } }
+#add-prayer-form, #edit-prayer-form { padding: 12px 15px; background-color: #ecf0f1; border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); border: none; }
+#add-prayer-form label, #edit-prayer-form label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.9em; color: #2c3e50; }
+#add-prayer-form input[type="text"], #add-prayer-form textarea, #edit-prayer-form input[type="text"], #edit-prayer-form textarea, #add-prayer-form input[type="date"], #edit-prayer-form input[type="date"], #edit-prayer-form select, #add-prayer-form select { width: 100%; padding: 8px 10px; margin-bottom: 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 0.9em; transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease; background-color: #ffffff; color: #333; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#add-prayer-form input[type="text"]:focus, #add-prayer-form textarea:focus, #edit-prayer-form input[type="text"]:focus, #edit-prayer-form textarea:focus, #add-prayer-form input[type="date"]:focus, #edit-prayer-form input[type="date"]:focus, #edit-prayer-form select:focus, #add-prayer-form select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 4px rgba(52, 152, 219, 0.5); }
+#journal-section { margin-top: 10px; border-top: 1px solid #bdc3c7; padding-top: 10px; }
+.journal-notes-display { max-height: 120px; padding: 8px; margin-bottom: 8px; }
+.journal-entry { margin-bottom: 8px; padding-bottom: 8px; }
+#add-journal-note-button { padding: 5px 10px; margin-top: 5px; font-size: 0.85em; }
+#add-prayer-form button, #edit-prayer-form button { margin-top: 5px; margin-right: 8px; padding: 7px 14px; font-size: 0.9em; }
+#add-prayer-modal .modal-header, #edit-prayer-modal .modal-header { padding-bottom: 5px; margin-bottom: 10px; border-bottom: none; }
+#add-prayer-modal .modal-header h2, #edit-prayer-modal .modal-header h2 { font-size: 1.1em; }
+#add-prayer-form button[type="submit"], #edit-prayer-form button[type="submit"] { background-color: #2ecc71; color: #ffffff; border: none; }
+#add-prayer-form button[type="submit"]:hover, #edit-prayer-form button[type="submit"]:hover { background-color: #219d52; transform: translateY(-1px); }
+#add-prayer-form #cancel-add-prayer, #edit-prayer-form #cancel-edit-prayer { background-color: #e74c3c; color: #ffffff; border: none; }
+#add-prayer-form #cancel-add-prayer:hover, #edit-prayer-form #cancel-edit-prayer:hover { background-color: #c0392b; transform: translateY(-1px); }
+.stats-container { display: none; margin-bottom: 15px; padding: 10px 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; font-size: 0.6em; color: #495057; text-align: left; flex-wrap: wrap; justify-content: space-around; align-items: flex-start; gap: 8px 15px; max-width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.stats-container span { display: inline-block; padding: 5px; border-bottom: 1px solid #eee; width: 100%; }
+.stats-container span:last-child { border-bottom: none; }
+.stats-container strong { color: #2c3e50; margin-right: 5px; display: block; margin-bottom: 3px; }
+#fullscreen-toggle-button { position: fixed; top: 15px; right: 15px; z-index: 995; padding: 0; width: 35px; height: 35px; font-size: 1.1em; line-height: 1; color: #ffffff; background-color: #7f8c8d; border: none; border-radius: 50%; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+#fullscreen-toggle-button:hover { background-color: #6c7a89; transform: scale(1.05); }
+@media (max-width: 768px) { .stats-container { flex-direction: column; align-items: stretch; gap: 1px; } .stats-container span { text-align: left; } .stats-container strong { display: inline-block; margin-bottom: 0; } }
+#add-prayer-form .form-field { display: flex; flex-wrap: nowrap; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+#add-prayer-form .form-field label { display: inline-block; flex: 0 0 140px; font-weight: 500; font-size: 0.9em; color: #2c3e50; margin-bottom: 0; padding-top: 8px; text-align: right; padding-right: 5px; box-sizing: border-box; }
+#add-prayer-form .form-field input[type="text"], #add-prayer-form .form-field textarea, #add-prayer-form .form-field select, #add-prayer-form .form-field input[type="date"] { flex: 1 1 auto; width: auto; min-width: 150px; margin-bottom: 0; padding: 8px 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 0.9em; transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease; background-color: #ffffff; color: #333; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#add-prayer-form .form-field input[type="text"]:focus, #add-prayer-form .form-field textarea:focus, #add-prayer-form .form-field select:focus, #add-prayer-form .form-field input[type="date"]:focus { border-color: #3498db; outline: none; box-shadow: 0 0 4px rgba(52, 152, 219, 0.5); }
+#add-prayer-form .form-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+#add-prayer-form .form-buttons button { margin-top: 0; margin-right: 0; padding: 7px 14px; font-size: 0.9em; }
+#add-prayer-form .form-buttons button[type="submit"] { background-color: #2ecc71; color: #ffffff; border: none; }
+#add-prayer-form .form-buttons button[type="submit"]:hover { background-color: #219d52; transform: translateY(-1px); }
+#add-prayer-form .form-buttons #cancel-add-prayer { background-color: #e74c3c; color: #ffffff; border: none; }
+#add-prayer-form .form-buttons #cancel-add-prayer:hover { background-color: #c0392b; transform: translateY(-1px); }
+#edit-prayer-form .form-field { display: flex; flex-wrap: nowrap; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+#edit-prayer-form .form-field label { display: inline-block; flex: 0 0 140px; font-weight: 500; font-size: 0.9em; color: #2c3e50; margin-bottom: 0; padding-top: 8px; text-align: right; padding-right: 5px; box-sizing: border-box; }
+#edit-prayer-form .form-field input[type="text"], #edit-prayer-form .form-field textarea, #edit-prayer-form .form-field select, #edit-prayer-form .form-field input[type="date"] { flex: 1 1 auto; width: auto; min-width: 150px; margin-bottom: 0; padding: 8px 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 0.9em; transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease; background-color: #ffffff; color: #333; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#edit-prayer-form .form-field input[type="text"]:focus, #edit-prayer-form .form-field textarea:focus, #edit-prayer-form .form-field select:focus, #edit-prayer-form .form-field input[type="date"]:focus { border-color: #3498db; outline: none; box-shadow: 0 0 4px rgba(52, 152, 219, 0.5); }
+#edit-prayer-form .form-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+#edit-prayer-form .form-buttons button { margin-top: 0; margin-right: 0; padding: 7px 14px; font-size: 0.9em; }
+#edit-prayer-form .form-buttons button[type="submit"] { background-color: #2ecc71; color: #ffffff; border: none; }
+#edit-prayer-form .form-buttons button[type="submit"]:hover { background-color: #219d52; transform: translateY(-1px); }
+#edit-prayer-form .form-buttons #cancel-edit-prayer { background-color: #e74c3c; color: #ffffff; border: none; }
+#edit-prayer-form .form-buttons #cancel-edit-prayer:hover { background-color: #c0392b; transform: translateY(-1px); }
+@media (max-width: 768px) { #add-prayer-form .form-field label { flex-basis: 120px; padding-top: 7px; } #edit-prayer-form .form-field label { flex-basis: 120px; padding-top: 7px; } }
+@media (max-width: 600px) { #add-prayer-form .form-field { flex-direction: column; align-items: stretch; gap: 5px; } #add-prayer-form .form-field label { flex-basis: auto; text-align: left; padding-top: 0; padding-right: 0; margin-bottom: 3px; } #add-prayer-form .form-field input[type="text"], #add-prayer-form .form-field textarea, #add-prayer-form .form-field select, #add-prayer-form .form-field input[type="date"] { width: 100%; min-width: 0; } #add-prayer-form .form-buttons { flex-direction: column; align-items: stretch; } #add-prayer-form .form-buttons button { width: 100%; } #edit-prayer-form .form-field { flex-direction: column; align-items: stretch; gap: 5px; } #edit-prayer-form .form-field label { flex-basis: auto; text-align: left; padding-top: 0; padding-right: 0; margin-bottom: 3px; } #edit-prayer-form .form-field input[type="text"], #edit-prayer-form .form-field textarea, #edit-prayer-form .form-field select, #edit-prayer-form .form-field input[type="date"] { width: 100%; min-width: 0; } #edit-prayer-form .form-buttons { flex-direction: column; align-items: stretch; } #edit-prayer-form .form-buttons button { width: 100%; } }
+
+</style>
+</head>
+<body>
+
+
+<button id="fullscreen-toggle-button" title="Enter Fullscreen">
+        <i class="fas fa-expand"></i></button>
+    <div id="featuresModal" class="modal">
+         
+       </div>
+
+    <div class="container">
+
+
+        <h1><font color="teal">Praycher ™</font></h1>
+        <div class="list-management">
+            <select id="list-selector"></select>
+            <button id="create-list-button" title="Create New List"><i class="fas fa-plus"></i></button>
+            <button id="edit-list-name-button" title="Edit Current List Name"><i class="fas fa-edit"></i></button>
+            <button id="delete-list-button" title="Delete Current List (Cannot Undo!)"><i class="fas fa-trash-alt"></i></button>
+             <h4></h4>
+            </div>
+
+        <div class="button-container">
+
+            <div class="dropdown" id="more-actions-dropdown">
+                <button title="More Actions"><i class="fas fa-ellipsis-v"></i></button>
+                <div class="dropdown-content">
+                    <button id="export-data-button-dd" title="Export All Prayer Data"><i class="fas fa-file-export"></i> Export Data</button>
+                    <button id="import-data-button-dd" title="Import Prayer Data"><i class="fas fa-file-import"></i> Import Data</button>
+                    <button id="clear-data-button-dd" title="Clear All Prayer Data (Cannot Undo!)"><i class="fas fa-trash-alt"></i> Clear All Data</button>
+                </div>
+            </div>
+
+            <div class="dropdown" id="view-options-dropdown">
+                <button title="View Options"><i class="fas fa-eye"></i></button>
+                <div class="dropdown-content">
+                    <button id="view-answered-button-dd" title="View Answered Prayers"><i class="fas fa-check-circle"></i> Answered</button>
+                    <button id="view-not-granted-button-dd" title="View Not Granted Prayers"><i class="fas fa-times-circle"></i> Not Granted</button>
+                    <button id="view-archived-active-button-dd" title="View Archived Active Prayers"><i class="fas fa-archive"></i> Archived Active</button>
+                </div>
+            </div>
+
+            <button id="toggle-stats-button" title="Show/Hide Statistics"> <i class="fas fa-chart-bar"></i></button>
+
+            <button id="add-prayer-button" title="Add New Prayer"><i class="fas fa-plus"></i></button>
+
+
+
+        </div>
+        <input type="file" id="import-file-input" accept=".json,.txt" style="display: none;">
+
+        <div id="stats-display" class="stats-container">
+            Loading stats...
+        </div>
+
+        <div class="search-filter-bar">
+            <div class="search-container">
+                <input type="search" id="search-input" placeholder="Search by Keywords">
+            </div>
+            <div class="filter-controls">
+                 <select id="priority-filter-select" title="Filter by Priority"></select>
+                 <select id="custom-tag-filter-select" title="Filter by Custom Tag"></select>
+                 <select id="sort-options-select" title="Sort Prayers"></select>
+            </div>
+        </div>
+
+        <div class="prayer-list" id="prayer-list"></div>
+        <button id="show-more-button">Show More</button>
+
+        <div id="add-prayer-modal" class="modal">
+              <div class="modal-content">
+                  <span class="modal-close-button" id="close-add-prayer-modal">&times;</span>
+                  <div class="modal-header" style="border-bottom: none; padding-bottom: 5px; margin-bottom: 10px;">
+                      <h2>Add New Prayer</h2>
+                  </div>
+                <form id="add-prayer-form">
+    <div class="form-field">
+        <label for="add-name">Name:</label>
+        <input type="text" id="add-name" name="add-name" required>
+    </div>
+    <div class="form-field">
+        <label for="add-request">Request:</label>
+        <textarea id="add-request" name="add-request" rows="4" required></textarea>
+    </div>
+    <div class="form-field">
+        <label for="add-category">Category:</label>
+        <select id="add-category" name="add-category"></select>
+    </div>
+    <div class="form-field">
+        <label for="add-priority">Priority:</label>
+        <select id="add-priority" name="add-priority"></select>
+    </div>
+    <div class="form-field">
+        <label for="add-tags">Tags (Optional):</label>
+        <input type="text" id="add-tags" name="add-tags" placeholder="e.g., urgent, family, healing">
+    </div>
+    <div class="form-field">
+        <label for="add-date">Expected:</label>
+        <input type="date" id="add-date" name="add-date">
+    </div>
+    <div class="form-field">
+        <label for="add-journal-note">Note (Optional):</label>
+        <textarea id="add-journal-note" name="add-journal-note" rows="3"></textarea>
+    </div>
+    <div class="form-field">
+        <label for="add-link-to-prayer">Link (Optional):</label>
+        <select id="add-link-to-prayer" name="add-link-to-prayer"></select>
+    </div>
+
+    <div class="form-buttons"> <button type="submit">Submit Request</button>
+        <button type="button" id="cancel-add-prayer">Cancel</button>
+    </div>
+</form>
+              </div>
+          </div>
+
+        <div id="edit-prayer-modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close-button" id="close-edit-prayer-modal">&times;</span>
+        <div class="modal-header" style="border-bottom: none; padding-bottom: 5px; margin-bottom: 10px;">
+            <h2>Edit Prayer</h2>
+        </div>
+        <form id="edit-prayer-form">
+            <input type="hidden" id="edit-index" name="edit-index">
+            <div class="form-field">
+                <label for="edit-name">Name:</label>
+                <input type="text" id="edit-name" name="edit-name" required>
+            </div>
+            <div class="form-field">
+                <label for="edit-request">Request:</label>
+                <textarea id="edit-request" name="edit-request" rows="4" required></textarea>
+            </div>
+            <div class="form-field">
+                <label for="edit-category">Category:</label>
+                <select id="edit-category" name="edit-category"></select>
+            </div>
+            <div class="form-field">
+                <label for="edit-priority">Priority:</label>
+                <select id="edit-priority" name="edit-priority"></select>
+            </div>
+            <div class="form-field">
+                <label for="edit-tags">Tags (Optional):</label>
+                <input type="text" id="edit-tags" name="edit-tags" placeholder="e.g., urgent, family, healing">
+            </div>
+            <div class="form-field">
+                <label for="edit-date">Expected:</label>
+                <input type="date" id="edit-date" name="edit-date">
+            </div>
+            <div class="form-field">
+                <label for="edit-status">Status:</label>
+                <select id="edit-status" name="edit-status">
+                    <option value="">Active</option>
+                    <option value="Yes">Answered</option>
+                    <option value="No">Not Granted</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="edit-link-to-prayer">Link (Optional):</label>
+                <select id="edit-link-to-prayer" name="edit-link-to-prayer"></select>
+            </div>
+
+            <div id="journal-section">
+                <div class="form-field">
+                    <label>Notes:</label>
+                    <div id="journal-notes-display" class="journal-notes-display" style="flex-grow: 1; min-height: 60px;"></div>
+                </div>
+                <div class="form-field">
+                    <label for="edit-new-journal-note">Add New Note:</label>
+                    <textarea id="edit-new-journal-note" name="edit-new-journal-note" rows="3" placeholder="Add today's thoughts or updates..."></textarea>
+                </div>
+                <div class="form-field"> <label style="visibility: hidden;">Action:</label> <button type="button" id="add-journal-note-button" style="margin-left: auto;">Add Note</button>
+                </div>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit">Save Changes</button>
+                <button type="button" id="cancel-edit-prayer">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+        <div id="answered-prayers-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close-button" id="close-answered-modal">&times;</span>
+                <div class="modal-header"><h2>Answered Prayers</h2></div>
+                <div class="modal-body">
+                    <div id="answered-prayers-modal-list" class="answered-prayers-modal-list"></div>
+                    <div id="prayer-history" style="display: none;">
+                        <h3>Records of Answered Prayers</h3>
+                        <ul id="history-list" class="history-list"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer"><div class="history-buttons"><button id="view-history-button">History</button></div></div>
+            </div>
+        </div>
+
+        <div id="not-granted-prayers-modal" class="modal">
+              <div class="modal-content">
+                  <span class="modal-close-button" id="close-not-granted-modal">&times;</span>
+                  <div class="modal-header"><h2>Not Granted Prayers</h2></div>
+                  <div class="modal-body">
+                      <div id="not-granted-prayers-modal-list" class="not-granted-prayers-modal-list"></div>
+                      <div id="not-granted-prayer-history" style="display: none;">
+                          <h3>Prayer History (Not Granted)</h3>
+                          <ul id="not-granted-history-list" class="history-list"></ul>
+                      </div>
+                  </div>
+                  <div class="modal-footer"><div class="history-buttons"><button id="view-not-granted-history-button">History</button></div></div>
+              </div>
+          </div>
+
+         <div id="archived-active-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close-button" id="close-archived-active-modal">&times;</span>
+                <div class="modal-header"><h2>Archived Active Prayers</h2></div>
+                <div class="modal-body">
+                    <div id="archived-active-list" class="archived-active-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirmation-modal" class="confirmation-modal">
+            <div class="confirmation-content">
+                <h3 id="confirmation-title" style="margin-top: 0; color: #e74c3c;">Confirm Action</h3> <span class="modal-close-button" id="close-confirmation-modal" style="top: 5px; right: 10px;">&times;</span>
+                <p id="confirmation-message">Are you sure?</p>
+                <div class="confirmation-buttons">
+                    <button id="confirm-delete" class="confirm-button">Confirm</button>
+                    <button id="cancel-delete" class="cancel-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="import-options-modal" class="confirmation-modal">
+            <div class="confirmation-content">
+                <h3 id="import-options-title" style="margin-top: 0; color: #3498db;">Import Options</h3>
+                <span class="modal-close-button" id="close-import-options-modal" style="top: 5px; right: 10px;">&times;</span>
+                <p id="import-options-message">Prayer data loaded successfully. How would you like to import it?</p>
+                <div class="confirmation-buttons" style="justify-content: space-around;">
+                    <button id="import-merge-button" class="confirm-button" style="background-color: #1abc9c;">Merge</button>
+                    <button id="import-overwrite-button" class="confirm-button" style="background-color: #e67e22;">Overwrite</button>
+                    <button id="import-cancel-button" class="cancel-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="maximized-view" class="modal">
+            <div class="modal-content">
+                <span class="modal-close-button" id="close-maximized-modal">&times;</span>
+                <div id="maximized-content"></div>
+                <div class="font-size-controls">
+                    <button id="font-size-normal" class="font-size-option-button" title="Set text size to Normal">Normal</button>
+                    <button id="font-size-large" class="font-size-option-button" title="Set text size to Large">Large</button>
+                    <button id="font-size-huge" class="font-size-option-button" title="Set text size to Huge">Huge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+       // DOM Element References
+const prayerListDiv = document.getElementById('prayer-list');
+const addPrayerButton = document.getElementById('add-prayer-button');
+const addPrayerModal = document.getElementById('add-prayer-modal');
+const closeAddPrayerModalButton = document.getElementById('close-add-prayer-modal');
+const addPrayerForm = document.getElementById('add-prayer-form');
+const cancelAddPrayerButton = document.getElementById('cancel-add-prayer');
+const editPrayerModal = document.getElementById('edit-prayer-modal');
+const closeEditPrayerModalButton = document.getElementById('close-edit-prayer-modal');
+const editPrayerForm = document.getElementById('edit-prayer-form');
+const cancelEditPrayerButton = document.getElementById('cancel-edit-prayer');
+const showMoreButton = document.getElementById('show-more-button');
+const viewOptionsDropdown = document.getElementById('view-options-dropdown');
+const viewAnsweredButton = document.getElementById('view-answered-button-dd');
+const answeredPrayersModal = document.getElementById('answered-prayers-modal');
+const closeAnsweredModalButton = document.getElementById('close-answered-modal');
+const answeredPrayersModalList = document.getElementById('answered-prayers-modal-list');
+const viewHistoryButton = document.getElementById('view-history-button');
+const prayerHistoryDiv = document.getElementById('prayer-history');
+const historyList = document.getElementById('history-list');
+const viewNotGrantedButton = document.getElementById('view-not-granted-button-dd');
+const notGrantedPrayersModal = document.getElementById('not-granted-prayers-modal');
+const closeNotGrantedModalButton = document.getElementById('close-not-granted-modal');
+const notGrantedPrayersModalList = document.getElementById('not-granted-prayers-modal-list');
+const viewNotGrantedHistoryButton = document.getElementById('view-not-granted-history-button');
+const notGrantedPrayerHistoryDiv = document.getElementById('not-granted-prayer-history');
+const notGrantedHistoryList = document.getElementById('not-granted-history-list');
+const archivedActiveModal = document.getElementById('archived-active-modal');
+const viewArchivedActiveButton = document.getElementById('view-archived-active-button-dd');
+const closeArchivedActiveModalButton = document.getElementById('close-archived-active-modal');
+const archivedActiveListDiv = document.getElementById('archived-active-list');
+const moreActionsDropdown = document.getElementById('more-actions-dropdown');
+const clearDataButton = document.getElementById('clear-data-button-dd');
+const exportDataButton = document.getElementById('export-data-button-dd');
+const importDataButton = document.getElementById('import-data-button-dd');
+const importFileInput = document.getElementById('import-file-input');
+const confirmationModal = document.getElementById('confirmation-modal');
+const confirmDeleteButton = document.getElementById('confirm-delete');
+const cancelDeleteButton = document.getElementById('cancel-delete');
+const closeConfirmationModalButton = document.getElementById('close-confirmation-modal');
+const confirmationTitle = document.getElementById('confirmation-title');
+const confirmationMessage = document.getElementById('confirmation-message');
+const maximizedView = document.getElementById('maximized-view');
+const closeMaximizedModalButton = document.getElementById('close-maximized-modal');
+const maximizedContent = document.getElementById('maximized-content');
+const fontSizeNormalButton = document.getElementById('font-size-normal');
+const fontSizeLargeButton = document.getElementById('font-size-large');
+const fontSizeHugeButton = document.getElementById('font-size-huge');
+const addCategorySelect = document.getElementById('add-category');
+const editCategorySelect = document.getElementById('edit-category');
+const addPrioritySelect = document.getElementById('add-priority');
+const editPrioritySelect = document.getElementById('edit-priority');
+const searchInput = document.getElementById('search-input');
+const priorityFilterSelect = document.getElementById('priority-filter-select');
+const customTagFilterSelect = document.getElementById('custom-tag-filter-select');
+const sortOptionsSelect = document.getElementById('sort-options-select');
+const listSelector = document.getElementById('list-selector');
+const createListButton = document.getElementById('create-list-button');
+const editListNameButton = document.getElementById('edit-list-name-button');
+const deleteListButton = document.getElementById('delete-list-button');
+const featuresModal = document.getElementById("featuresModal");
+const addTagsInput = document.getElementById('add-tags');
+const editTagsInput = document.getElementById('edit-tags');
+const addLinkSelect = document.getElementById('add-link-to-prayer');
+const editLinkSelect = document.getElementById('edit-link-to-prayer');
+const fullscreenToggleButton = document.getElementById('fullscreen-toggle-button'); // Enabled for fullscreen
+const statsDisplay = document.getElementById('stats-display');
+const toggleStatsButton = document.getElementById('toggle-stats-button');
+const importOptionsModal = document.getElementById('import-options-modal');
+const importOptionsTitle = document.getElementById('import-options-title');
+const importOptionsMessage = document.getElementById('import-options-message');
+const importMergeButton = document.getElementById('import-merge-button');
+const importOverwriteButton = document.getElementById('import-overwrite-button');
+const importCancelButton = document.getElementById('import-cancel-button');
+const closeImportOptionsModalButton = document.getElementById('close-import-options-modal');
+
+// Global Variables and Constants
+let allPrayerData = {};
+let activeListName = '';
+const DEFAULT_LIST_NAME = "Personal";
+let currentlyEditing = null;
+let visiblePrayerCount = 4;
+const prayersPerLoad = 4;
+let viewingHistory = false;
+let viewingNotGrantedHistory = false;
+const categories = ["General", "Health", "Family", "Finances", "Work", "School", "Guidance", "Protection", "Thanksgiving", "Other"];
+const priorities = ["High", "Medium", "Low"];
+const FONT_SIZE_NORMAL = 1.4;
+const FONT_SIZE_LARGE = 1.8;
+const FONT_SIZE_HUGE = 2.2;
+let currentSearchQuery = '';
+let currentSortCriteria = 'default';
+let currentConfirmAction = null;
+
+// --- Fullscreen API Helper Functions ---
+/**
+ * Checks if the document is currently in fullscreen mode.
+ * @returns {boolean} True if in fullscreen, false otherwise.
+ */
+function isFullScreen() {
+    return document.fullscreenElement ||
+           document.webkitFullscreenElement ||
+           document.mozFullScreenElement ||
+           document.msFullscreenElement;
+}
+
+/**
+ * Requests fullscreen for a given element.
+ * Handles vendor prefixes for cross-browser compatibility.
+ * @param {HTMLElement} element - The element to make fullscreen.
+ */
+function requestAppFullScreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.webkitRequestFullscreen) { /* Safari */
+        element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) { /* Firefox */
+        element.mozRequestFullScreen();
+    } else if (element.msRequestFullscreen) { /* IE/Edge */
+        element.msRequestFullscreen();
+    }
+}
+
+/**
+ * Exits fullscreen mode.
+ * Handles vendor prefixes for cross-browser compatibility.
+ */
+function exitAppFullScreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) { /* Firefox */
+        document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) { /* IE/Edge */
+        document.msExitFullscreen();
+    }
+}
+
+/**
+ * Updates the fullscreen toggle button's icon and title
+ * based on the current fullscreen state.
+ */
+function updateFullscreenButtonUI() {
+    if (!fullscreenToggleButton) return; // Guard clause if button isn't found
+    const icon = fullscreenToggleButton.querySelector('i');
+    if (isFullScreen()) {
+        icon.classList.remove('fa-expand');
+        icon.classList.add('fa-compress');
+        fullscreenToggleButton.title = 'Exit Fullscreen';
+    } else {
+        icon.classList.remove('fa-compress');
+        icon.classList.add('fa-expand');
+        fullscreenToggleButton.title = 'Enter Fullscreen';
+    }
+}
+
+/**
+ * Toggles the application's fullscreen state.
+ */
+function toggleAppFullScreen() {
+    if (!isFullScreen()) {
+        requestAppFullScreen(document.documentElement); // Request fullscreen on the whole page
+    } else {
+        exitAppFullScreen();
+    }
+    // The 'fullscreenchange' event (handled below) will update the button UI.
+}
+
+
+// --- Dropdown Management ---
+/**
+ * Toggles the display of a dropdown's content.
+ * @param {HTMLElement} dropdownElement - The dropdown container element.
+ */
+function toggleDropdown(dropdownElement) {
+    const content = dropdownElement.querySelector('.dropdown-content');
+    if (content) {
+        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+/**
+ * Closes all main header dropdowns.
+ */
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown > .dropdown-content').forEach(content => {
+        content.style.display = 'none';
+    });
+}
+
+// Event listeners for main header dropdown toggles
+document.querySelectorAll('.dropdown > button').forEach(button => {
+    button.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent click from immediately closing due to window listener
+        const parentDropdown = button.closest('.dropdown');
+        const content = parentDropdown.querySelector('.dropdown-content');
+        const wasOpen = content && content.style.display === 'block';
+        closeAllDropdowns(); // Close others first
+        if (!wasOpen && content) { // If it wasn't open, toggle it (which will open it)
+            content.style.display = 'block';
+        }
+    });
+});
+
+// --- Modal Management & Global Click Listener ---
+/**
+ * Global click listener to close dropdowns and modals when clicking outside.
+ */
+window.addEventListener('click', (event) => {
+    // Close main header dropdowns if click is outside
+    if (!event.target.closest('.dropdown')) {
+        closeAllDropdowns();
+    }
+
+    // Close prayer item action dropdowns if click is outside
+    if (!event.target.closest('.prayer-item-more-options-button') && !event.target.closest('.prayer-item-actions-dropdown')) {
+        document.querySelectorAll('.prayer-item-actions-dropdown.active').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    }
+
+    // Modal closing logic
+    if (event.target == addPrayerModal) { closeAddPrayerModal(); }
+    else if (event.target == editPrayerModal) { closeEditPrayerModal(); }
+    else if (event.target == answeredPrayersModal) { closeAnsweredModal(); }
+    else if (event.target == notGrantedPrayersModal) { closeNotGrantedModal(); }
+    else if (event.target == archivedActiveModal) { closeArchivedActiveModal(); }
+    else if (event.target == confirmationModal) { hideConfirmationModal(); }
+    else if (event.target == maximizedView) { closeMaximizedModal(); }
+    else if (featuresModal && event.target == featuresModal) { closeFeaturesModal(); }
+    else if (event.target == importOptionsModal) { hideImportOptionsModal(); }
+});
+
+
+// --- Utility Functions ---
+/**
+ * Parses a date string into a Date object.
+ * Handles "MM/DD/YYYY" and standard date strings.
+ * @param {string} dateString - The date string to parse.
+ * @returns {Date|null} The parsed Date object or null if invalid.
+ */
+function parseLocalDate(dateString) {
+    if (!dateString || dateString === 'N/A') return null;
+    let date = new Date(dateString);
+    if (!isNaN(date.getTime())) { return date; }
+    const parts = dateString.split('/'); // Attempt to parse MM/DD/YYYY
+    if (parts.length === 3) {
+        date = new Date(parts[2], parseInt(parts[0], 10) - 1, parts[1]);
+        if (!isNaN(date.getTime())) return date;
+    }
+    console.warn("Could not parse date:", dateString);
+    return null;
+}
+
+/**
+ * Checks if a date is within the last week.
+ * @param {Date} date - The date to check.
+ * @returns {boolean} True if within the last week, false otherwise.
+ */
+function isWithinLastWeek(date) {
+    if (!date) return false;
+    const today = new Date();
+    const oneWeekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+    return date >= oneWeekAgo;
+}
+
+/**
+ * Checks if a date is within the current month.
+ * @param {Date} date - The date to check.
+ * @returns {boolean} True if within the current month, false otherwise.
+ */
+function isWithinCurrentMonth(date) {
+    if (!date) return false;
+    const today = new Date();
+    return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth();
+}
+
+/**
+ * Calculates the time difference between a start date and today.
+ * @param {Date} startDate - The starting date.
+ * @returns {string} A string representing the time difference (e.g., "2 days", "3 weeks").
+ */
+function getTimeDifferenceString(startDate) {
+    if (!startDate) return "N/A";
+    const today = new Date();
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "1 day";
+    if (diffDays < 7) return `${diffDays} days`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months`;
+    return `${Math.floor(diffDays / 365)} years`;
+}
+
+/**
+ * Generates a unique ID string.
+ * @returns {string} A unique ID.
+ */
+function generateUniqueId() {
+    return Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+}
+
+/**
+ * Darkens a HEX color by a given percentage.
+ * @param {string} hex - The HEX color string (e.g., "#RRGGBB").
+ * @param {number} percent - The percentage to darken by (0-100).
+ * @returns {string} The darkened HEX color string.
+ */
+function darkenHexColor(hex, percent) {
+    hex = hex.replace(/^#/, '');
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+    r = Math.max(0, Math.floor(r * (1 - percent / 100)));
+    g = Math.max(0, Math.floor(g * (1 - percent / 100)));
+    b = Math.max(0, Math.floor(b * (1 - percent / 100)));
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+/**
+ * Parses a comma-separated string of tags into an array.
+ * @param {string} tagsString - The string of tags.
+ * @returns {string[]} An array of trimmed tags.
+ */
+function parseTags(tagsString) {
+    if (!tagsString || typeof tagsString !== 'string') { return []; }
+    return tagsString.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+}
+
+// --- Modal Open/Close Functions ---
+function openFeaturesModal() { if (featuresModal) featuresModal.style.display = "flex"; }
+function closeFeaturesModal() { if (featuresModal) featuresModal.style.display = "none"; }
+
+function openAddPrayerModal() {
+    addPrayerForm.reset();
+    addCategorySelect.value = categories[0];
+    addPrioritySelect.value = priorities[1];
+    addTagsInput.value = '';
+    document.getElementById('add-journal-note').value = '';
+    populateLinkDropdown('add-link-to-prayer');
+    addPrayerModal.style.display = 'flex';
+    document.getElementById('add-name').focus();
+}
+function closeAddPrayerModal() {
+    addPrayerForm.reset();
+    addCategorySelect.value = categories[0];
+    addPrioritySelect.value = priorities[1];
+    addTagsInput.value = '';
+    document.getElementById('add-journal-note').value = '';
+    addLinkSelect.innerHTML = '<option value="">None</option>';
+    addPrayerModal.style.display = 'none';
+}
+function openEditPrayerModal() {
+    editPrayerModal.style.display = 'flex';
+    document.getElementById('edit-name').focus();
+}
+function closeEditPrayerModal() {
+    editPrayerForm.reset();
+    editCategorySelect.value = categories[0];
+    editPrioritySelect.value = priorities[1];
+    editTagsInput.value = '';
+    document.getElementById('edit-new-journal-note').value = '';
+    document.getElementById('journal-notes-display').innerHTML = '';
+    editLinkSelect.innerHTML = '<option value="">None</option>';
+    editPrayerModal.style.display = 'none';
+    if (currentlyEditing !== null) {
+        currentlyEditing = null;
+        displayPrayers(); // Refresh list if an edit was cancelled
+    }
+}
+function closeAnsweredModal() { answeredPrayersModal.style.display = 'none'; }
+function closeNotGrantedModal() { notGrantedPrayersModal.style.display = 'none'; }
+function closeMaximizedModal() { maximizedView.style.display = 'none'; }
+function closeArchivedActiveModal() { archivedActiveModal.style.display = 'none'; }
+
+/**
+ * Shows a confirmation modal.
+ * @param {string} message - The message to display (can include HTML).
+ * @param {function} confirmAction - The function to call if confirmed.
+ * @param {string} [title='Confirm Action'] - The modal title.
+ * @param {string} [confirmButtonText='Confirm'] - Text for the confirm button.
+ * @param {string} [confirmButtonColor='#e74c3c'] - Background color for the confirm button.
+ */
+function showConfirmationModal(message, confirmAction, title = 'Confirm Action', confirmButtonText = 'Confirm', confirmButtonColor = '#e74c3c') {
+    confirmationTitle.textContent = title;
+    confirmationMessage.innerHTML = message; // Use innerHTML to allow HTML in message
+    confirmDeleteButton.textContent = confirmButtonText;
+    confirmDeleteButton.style.backgroundColor = confirmButtonColor;
+    currentConfirmAction = confirmAction;
+
+    // Dynamic hover color for confirm button
+    const hoverColor = confirmButtonColor.length === 7 ? darkenHexColor(confirmButtonColor, 15) : '#c0392b'; // Ensure it's a hex
+    confirmDeleteButton.onmouseover = () => confirmDeleteButton.style.backgroundColor = hoverColor;
+    confirmDeleteButton.onmouseout = () => confirmDeleteButton.style.backgroundColor = confirmButtonColor;
+
+    confirmationModal.style.display = 'flex';
+}
+function hideConfirmationModal() {
+    confirmationModal.style.display = 'none';
+    currentConfirmAction = null; // Reset action
+}
+
+/**
+ * Shows the import options modal.
+ * @param {object} parsedData - The parsed data from the imported file.
+ */
+function showImportOptionsModal(parsedData) {
+    // Re-clone buttons to remove old event listeners and attach new ones
+    importMergeButton.replaceWith(importMergeButton.cloneNode(true));
+    importOverwriteButton.replaceWith(importOverwriteButton.cloneNode(true));
+    importCancelButton.replaceWith(importCancelButton.cloneNode(true));
+
+    // Get new references to the cloned buttons
+    const newMergeButton = document.getElementById('import-merge-button');
+    const newOverwriteButton = document.getElementById('import-overwrite-button');
+    const newCancelButton = document.getElementById('import-cancel-button');
+
+    newMergeButton.addEventListener('click', () => {
+        hideImportOptionsModal();
+        mergeImportedData(parsedData);
+    });
+
+    newOverwriteButton.addEventListener('click', () => {
+        hideImportOptionsModal();
+        const message = "Importing will <strong>OVERWRITE</strong> all current prayer lists and data.<br><br>Are you sure you want to proceed?";
+        showConfirmationModal(message, () => {
+            allPrayerData = parsedData; // Assign parsed data directly
+            sanitizeAndValidateAllData(); // Validate the newly assigned data
+            localStorage.removeItem('activeListName'); // Clear old active list name
+            savePrayers(); // Save the new data
+            loadPrayers(); // Reload UI
+            updateStatsDisplay();
+            alert("Data overwritten and imported successfully!");
+        }, 'Confirm Overwrite', 'Overwrite', '#e67e22');
+    });
+
+    newCancelButton.addEventListener('click', hideImportOptionsModal);
+
+    importOptionsModal.style.display = 'flex';
+}
+function hideImportOptionsModal() {
+    importOptionsModal.style.display = 'none';
+}
+closeImportOptionsModalButton.addEventListener('click', hideImportOptionsModal);
+
+
+// --- Dropdown Population Functions ---
+function populateCategoryDropdowns() {
+    addCategorySelect.innerHTML = '';
+    editCategorySelect.innerHTML = '';
+    categories.forEach(category => {
+        const option1 = document.createElement('option'); option1.value = category; option1.textContent = category; addCategorySelect.appendChild(option1);
+        const option2 = document.createElement('option'); option2.value = category; option2.textContent = category; editCategorySelect.appendChild(option2);
+    });
+    editCategorySelect.value = categories[0]; // Default selection
+    addCategorySelect.value = categories[0];  // Default selection
+}
+function populatePriorityDropdowns() {
+    addPrioritySelect.innerHTML = ''; editPrioritySelect.innerHTML = '';
+    priorities.forEach(priority => {
+        const option1 = document.createElement('option'); option1.value = priority; option1.textContent = priority; addPrioritySelect.appendChild(option1);
+        const option2 = document.createElement('option'); option2.value = priority; option2.textContent = priority; editPrioritySelect.appendChild(option2);
+    });
+    addPrioritySelect.value = priorities[1]; // Default to Medium
+    editPrioritySelect.value = priorities[1]; // Default to Medium
+}
+function populatePriorityFilterDropdown() {
+    priorityFilterSelect.innerHTML = '<option value="all">Prio</option>'; // "All Priorities"
+    priorities.forEach(p => { const option = document.createElement('option'); option.value = p; option.textContent = p; priorityFilterSelect.appendChild(option); });
+    priorityFilterSelect.value = 'all'; // Default
+}
+function populateCustomTagFilterDropdown() {
+    const allTags = new Set();
+    // Iterate through all lists and all prayer arrays within each list
+    for (const listName in allPrayerData) {
+        const list = allPrayerData[listName];
+        // Ensure list and its prayer arrays exist
+        ['requests', 'answered', 'history', 'notGranted', 'notGrantedHistory', 'archivedActive'].forEach(arrKey => {
+            if (list && Array.isArray(list[arrKey])) {
+                list[arrKey].forEach(prayer => {
+                    if (prayer.tags && prayer.tags.length > 0) {
+                        prayer.tags.forEach(tag => allTags.add(tag));
+                    }
+                });
+            }
+        });
+    }
+    const sortedTags = [...allTags].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    customTagFilterSelect.innerHTML = '<option value="all">Tags</option>'; // "All Tags"
+    sortedTags.forEach(tag => { const option = document.createElement('option'); option.value = tag; option.textContent = tag; customTagFilterSelect.appendChild(option); });
+    customTagFilterSelect.value = 'all'; // Default
+}
+function populateSortDropdown() {
+    sortOptionsSelect.innerHTML = `<option value="default">Sort</option><option value="name">Names</option><option value="category">Categories</option><option value="expectedDate">Expected</option>`;
+    sortOptionsSelect.value = currentSortCriteria; // Restore current sort
+}
+function populateListSelector() {
+    listSelector.innerHTML = '';
+    const listNames = Object.keys(allPrayerData);
+    if (listNames.length === 0) {
+        // If no lists exist, create the default one
+        const option = document.createElement('option'); option.value = DEFAULT_LIST_NAME; option.textContent = DEFAULT_LIST_NAME; listSelector.appendChild(option);
+        if(!allPrayerData[DEFAULT_LIST_NAME]){ allPrayerData[DEFAULT_LIST_NAME] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] }; savePrayers(); }
+        activeListName = DEFAULT_LIST_NAME;
+    } else {
+        listNames.sort((a, b) => a.localeCompare(b)); // Sort list names alphabetically
+        listNames.forEach(name => { const option = document.createElement('option'); option.value = name; option.textContent = name; listSelector.appendChild(option); });
+    }
+    // Set the selected value, ensuring activeListName is valid or defaults to the first in the sorted list
+    listSelector.value = activeListName && allPrayerData[activeListName] ? activeListName : (listNames[0] || DEFAULT_LIST_NAME);
+    activeListName = listSelector.value; // Update activeListName based on final selection
+}
+function populateLinkDropdown(selectElementId, currentPrayerIdToExclude = null) {
+    const linkSelect = document.getElementById(selectElementId); if (!linkSelect) return;
+    linkSelect.innerHTML = '<option value="">None</option>'; // Default "None" option
+    if (!allPrayerData[activeListName] || !allPrayerData[activeListName].requests) return;
+
+    // Get prayers from the current active list's requests, exclude the current prayer if editing
+    const linkablePrayers = [...allPrayerData[activeListName].requests]
+        .filter(p => p.prayerId !== currentPrayerIdToExclude)
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '')); // Sort by name
+
+    linkablePrayers.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.prayerId;
+        option.textContent = `${p.name || 'Unnamed'} (${p.category || 'N/A'} - Added: ${p.dateAdded || 'N/A'})`;
+        linkSelect.appendChild(option);
+    });
+}
+
+// --- Statistics Display ---
+/**
+ * Updates the statistics display panel.
+ */
+function updateStatsDisplay() {
+    if (!statsDisplay) return;
+    if (!activeListName || !allPrayerData[activeListName]) { statsDisplay.innerHTML = `<span>No list selected or data available.</span>`; return; }
+
+    const currentList = allPrayerData[activeListName];
+    const allPrayersInList = [
+        ...(currentList.requests || []),
+        ...(currentList.answered || []),
+        ...(currentList.notGranted || []),
+        ...(currentList.history || []),
+        ...(currentList.notGrantedHistory || []),
+        ...(currentList.archivedActive || [])
+    ];
+
+    const activePrayers = (currentList.requests || []).filter(p => !p.status || (p.status !== 'Yes' && p.status !== 'No'));
+    const totalActive = activePrayers.length;
+
+    const answeredAndHistory = [...(currentList.answered || []), ...(currentList.history || [])];
+    let answeredThisWeek = 0; let answeredThisMonth = 0;
+    answeredAndHistory.forEach(p => {
+        const answeredDate = parseLocalDate(p.answeredDate);
+        if (answeredDate) {
+            if (isWithinLastWeek(answeredDate)) { answeredThisWeek++; }
+            if (isWithinCurrentMonth(answeredDate)) { answeredThisMonth++; }
+        }
+    });
+
+    let longestPendingPrayer = null; let oldestDate = null;
+    activePrayers.forEach(p => {
+        const addedDate = parseLocalDate(p.dateAdded);
+        if (addedDate) {
+            if (oldestDate === null || addedDate < oldestDate) {
+                oldestDate = addedDate;
+                longestPendingPrayer = p;
+            }
+        }
+    });
+    const longestPendingDuration = oldestDate ? getTimeDifferenceString(oldestDate) : "N/A";
+    const longestPendingName = longestPendingPrayer ? longestPendingPrayer.name : "";
+
+    const categoryCounts = {}; const tagCounts = {};
+    let totalPrayersWithCategory = 0; let totalPrayersWithTags = 0;
+    allPrayersInList.forEach(p => {
+        if (p.category && p.category !== 'N/A' && p.category !== 'Other') {
+            categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1;
+            totalPrayersWithCategory++;
+        }
+        if (p.tags && p.tags.length > 0) {
+            totalPrayersWithTags++;
+            p.tags.forEach(tag => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+        }
+    });
+
+    const findMostCommon = (counts) => {
+        let maxCount = 0; let mostCommon = [];
+        for (const item in counts) {
+            if (counts[item] > maxCount) { maxCount = counts[item]; mostCommon = [item]; }
+            else if (counts[item] === maxCount) { mostCommon.push(item); }
+        }
+        return { items: mostCommon, count: maxCount };
+    };
+
+    const mostCommonCategoryResult = findMostCommon(categoryCounts);
+    const mostCommonTagResult = findMostCommon(tagCounts);
+    const mostUsedCategory = totalPrayersWithCategory > 0 ? `${mostCommonCategoryResult.items.join(', ')} (${mostCommonCategoryResult.count})` : "N/A";
+    const mostUsedTag = totalPrayersWithTags > 0 ? `${mostCommonTagResult.items.join(', ')} (${mostCommonTagResult.count})` : "N/A";
+
+    statsDisplay.innerHTML = `<span><strong>Active:</strong> ${totalActive}</span> <span><strong>Answered (Week):</strong> ${answeredThisWeek}</span> <span><strong>Answered (Month):</strong> ${answeredThisMonth}</span> <span><strong>Longest Pending:</strong> ${longestPendingDuration}${longestPendingName ? ` (${longestPendingName.substring(0,15)}${longestPendingName.length > 15 ? '...' : ''})` : ''}</span> <span><strong>Top Category:</strong> ${mostUsedCategory}</span> <span><strong>Top Tag:</strong> ${mostUsedTag}</span>`;
+}
+
+/**
+ * Toggles the visibility of the statistics display.
+ */
+function toggleStatsDisplay() {
+    if (statsDisplay) {
+        const isHidden = statsDisplay.style.display === 'none' || statsDisplay.style.display === '';
+        statsDisplay.style.display = isHidden ? 'flex' : 'none';
+        if (isHidden) {
+            updateStatsDisplay(); // Update stats when showing
+        }
+    }
+}
+
+// --- Data Load/Save and Integrity ---
+/**
+ * Loads prayer data from localStorage and initializes the UI.
+ */
+function loadPrayers() {
+    const storedData = localStorage.getItem('allPrayerData');
+    const storedActiveList = localStorage.getItem('activeListName');
+    allPrayerData = storedData ? JSON.parse(storedData) : {};
+
+    sanitizeAndValidateAllData(allPrayerData); // Ensure data integrity after loading
+
+    if (Object.keys(allPrayerData).length === 0) {
+        // If no data, create a default list
+        allPrayerData[DEFAULT_LIST_NAME] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+        activeListName = DEFAULT_LIST_NAME;
+        savePrayers(); // Save the default structure
+    } else {
+        // Determine active list: use stored if valid, else first available, else default
+        activeListName = storedActiveList && allPrayerData[storedActiveList] ? storedActiveList : Object.keys(allPrayerData)[0];
+        if (!activeListName || !allPrayerData[activeListName]) { // Fallback if active list is somehow invalid
+            activeListName = Object.keys(allPrayerData).sort((a,b) => a.localeCompare(b))[0] || DEFAULT_LIST_NAME;
+            if (!allPrayerData[activeListName]) { // Ultimate fallback: create default if still no valid list
+                 allPrayerData[DEFAULT_LIST_NAME] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+                 activeListName = DEFAULT_LIST_NAME;
+                 savePrayers();
+            }
+        }
+    }
+
+    populateListSelector(); // Populates and sets activeListName based on selector
+    searchInput.value = ''; // Reset search
+    currentSearchQuery = '';
+    currentSortCriteria = 'default'; // Reset sort
+    currentlyEditing = null;
+    visiblePrayerCount = 4; // Reset pagination
+
+    // Populate all dropdowns
+    populateCategoryDropdowns();
+    populatePriorityDropdowns();
+    populatePriorityFilterDropdown();
+    populateCustomTagFilterDropdown();
+    populateSortDropdown();
+
+    displayPrayers(); // Display prayers for the active list
+    updateStatsDisplay(); // Update stats
+}
+
+/**
+ * Saves the current state of allPrayerData and activeListName to localStorage.
+ */
+function savePrayers() {
+    localStorage.setItem('allPrayerData', JSON.stringify(allPrayerData));
+    localStorage.setItem('activeListName', activeListName);
+}
+
+// --- Modal Content Display Functions ---
+function displayAnsweredPrayersModal() {
+    if (!allPrayerData[activeListName]) return; const currentList = allPrayerData[activeListName]; answeredPrayersModalList.innerHTML = '';
+    if (currentList.answered.length === 0) { answeredPrayersModalList.innerHTML = '<p>No answered prayers in this list yet.</p>'; return; }
+    currentList.answered.sort((a, b) => (a.name || '').localeCompare(b.name || '')); // Sort by name
+    currentList.answered.forEach((prayer) => {
+        const prayerItem = document.createElement('div'); prayerItem.classList.add('prayer-item'); const priorityText = prayer.priority ? `<p><strong>Priority:</strong> ${prayer.priority}</p>` : ''; const linkInfo = prayer.linkedPrayerId ? `<span class="linked-prayer-info">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span>` : '';
+        prayerItem.innerHTML = `<p><strong>Name:</strong> ${prayer.name || 'Unnamed'}</p><p><strong>Request:</strong> ${prayer.request}</p><p class="prayer-category"><strong>Category:</strong> ${prayer.category || 'N/A'}</p>${priorityText}${linkInfo}${prayer.dateNeeded ? `<p><strong>Needed:</strong> ${prayer.dateNeeded}</p>` : ''}${prayer.dateAdded ? `<p><strong>Added:</strong> ${prayer.dateAdded}</p>` : ''}${prayer.answeredDate ? `<p><strong>Answered:</strong> ${prayer.answeredDate}</p>` : ''}${prayer.tags && prayer.tags.length > 0 ? `<div class="prayer-tags-container" style="margin-top: 5px;">${prayer.tags.map(t => `<span class="prayer-tag" style="background-color: #cce5ff; color: #004085;">${t}</span>`).join('')}</div>` : ''}<button class="thank-you-button" title="Archive this answered prayer">Thank you, Lord!</button>`;
+        answeredPrayersModalList.appendChild(prayerItem);
+        const thankYouButton = prayerItem.querySelector('.thank-you-button');
+        thankYouButton.addEventListener('click', function() { const actualPrayerObject = prayer; const actualIndex = currentList.answered.findIndex(p => p === actualPrayerObject); if (actualIndex !== -1) { archiveAnsweredPrayer(actualIndex); } else { console.error("Could not find prayer to archive in active list's answered prayers."); } });
+    });
+}
+function displayNotGrantedPrayersModal() {
+    if (!allPrayerData[activeListName]) return; const currentList = allPrayerData[activeListName]; notGrantedPrayersModalList.innerHTML = '';
+    if (currentList.notGranted.length === 0) { notGrantedPrayersModalList.innerHTML = '<p>No "Not Granted" prayers in this list yet.</p>'; return; }
+    currentList.notGranted.sort((a, b) => (a.name || '').localeCompare(b.name || '')); // Sort by name
+    currentList.notGranted.forEach((prayer) => {
+        const prayerItem = document.createElement('div'); prayerItem.classList.add('prayer-item'); const priorityText = prayer.priority ? `<p><strong>Priority:</strong> ${prayer.priority}</p>` : ''; const linkInfo = prayer.linkedPrayerId ? `<span class="linked-prayer-info">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span>` : '';
+        prayerItem.innerHTML = `<p><strong>Name:</strong> ${prayer.name || 'Unnamed'}</p><p><strong>Request:</strong> ${prayer.request}</p><p class="prayer-category"><strong>Category:</strong> ${prayer.category || 'N/A'}</p>${priorityText}${linkInfo}${prayer.dateNeeded ? `<p><strong>Needed:</strong> ${prayer.dateNeeded}</p>` : ''}${prayer.dateAdded ? `<p><strong>Added:</strong> ${prayer.dateAdded}</p>` : ''}${prayer.tags && prayer.tags.length > 0 ? `<div class="prayer-tags-container" style="margin-top: 5px;">${prayer.tags.map(t => `<span class="prayer-tag" style="background-color: #f5c6cb; color: #721c24;">${t}</span>`).join('')}</div>` : ''}<button class="thank-you-button" title="Archive this 'not granted' prayer">Acknowledge!</button>`;
+        notGrantedPrayersModalList.appendChild(prayerItem);
+        const acknowledgeButton = prayerItem.querySelector('.thank-you-button');
+        acknowledgeButton.addEventListener('click', function() { const actualPrayerObject = prayer; const actualIndex = currentList.notGranted.findIndex(p => p === actualPrayerObject); if (actualIndex !== -1) { archiveNotGrantedPrayer(actualIndex); } else { console.error("Could not find prayer to archive in active list's not-granted prayers."); } });
+    });
+}
+function displayHistory() {
+    if (!allPrayerData[activeListName]) return; const currentList = allPrayerData[activeListName]; historyList.innerHTML = '';
+    if (currentList.history.length === 0) { historyList.innerHTML = '<li>No history of answered prayers in this list yet.</li>'; return; }
+    // Sort history by archivedDate descending
+    currentList.history.sort((a, b) => { const parseHistDate = (dateStr) => { if (!dateStr) return 0; try { return new Date(dateStr).getTime(); } catch (e) { return 0; } }; const dateA = parseHistDate(a.archivedDate); const dateB = parseHistDate(b.archivedDate); return dateB - dateA; });
+    currentList.history.forEach((prayer) => {
+        const listItem = document.createElement('li'); listItem.classList.add('history-item'); const priorityText = prayer.priority ? `<p><strong>Priority:</strong> ${prayer.priority}</p>` : ''; const linkInfo = prayer.linkedPrayerId ? `<p><span class="linked-prayer-info" style="margin-top:0;">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span></p>` : '';
+        listItem.innerHTML = `<div class="history-item-content"><p><strong>Name:</strong> ${prayer.name || 'Unnamed'}</p><p><strong>Request:</strong> ${prayer.request}</p><p class="prayer-category"><strong>Category:</strong> ${prayer.category || 'N/A'}</p>${priorityText}${linkInfo}${prayer.dateAdded && prayer.dateAdded !== 'N/A' ? `<p><strong>Added:</strong> ${prayer.dateAdded}</p>` : ''}${prayer.tags && prayer.tags.length > 0 ? `<p><strong>Tags:</strong> ${prayer.tags.join(', ')}</p>` : ''}<p><strong>Answered:</strong> ${prayer.answeredDate || 'N/A'}</p><p><strong>Archived:</strong> ${prayer.archivedDate || 'N/A'}</p></div>`;
+        historyList.appendChild(listItem);
+    });
+}
+function displayNotGrantedHistory() {
+    if (!allPrayerData[activeListName]) return; const currentList = allPrayerData[activeListName]; notGrantedHistoryList.innerHTML = '';
+    if (currentList.notGrantedHistory.length === 0) { notGrantedHistoryList.innerHTML = '<li>No history of "Not Granted" prayers in this list yet.</li>'; return; }
+    // Sort notGrantedHistory by archivedDate descending
+    currentList.notGrantedHistory.sort((a, b) => { const parseHistDate = (dateStr) => { if (!dateStr) return 0; try { return new Date(dateStr).getTime(); } catch (e) { return 0; } }; const dateA = parseHistDate(a.archivedDate); const dateB = parseHistDate(b.archivedDate); return dateB - dateA; });
+    currentList.notGrantedHistory.forEach((prayer) => {
+        const listItem = document.createElement('li'); listItem.classList.add('history-item'); const priorityText = prayer.priority ? `<p><strong>Priority:</strong> ${prayer.priority}</p>` : ''; const linkInfo = prayer.linkedPrayerId ? `<p><span class="linked-prayer-info" style="margin-top:0;">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span></p>` : '';
+        listItem.innerHTML = `<div class="history-item-content"><p><strong>Name:</strong> ${prayer.name || 'Unnamed'}</p><p><strong>Request:</strong> ${prayer.request}</p><p class="prayer-category"><strong>Category:</strong> ${prayer.category || 'N/A'}</p>${priorityText}${linkInfo}${prayer.dateAdded && prayer.dateAdded !== 'N/A' ? `<p><strong>Added:</strong> ${prayer.dateAdded}</p>` : ''}${prayer.tags && prayer.tags.length > 0 ? `<p><strong>Tags:</strong> ${prayer.tags.join(', ')}</p>` : ''}<p><strong>Acknowledged:</strong> ${prayer.archivedDate || 'N/A'}</p></div>`;
+        notGrantedHistoryList.appendChild(listItem);
+    });
+}
+function displayArchivedActiveModal() {
+    if (!allPrayerData[activeListName]) { archivedActiveListDiv.innerHTML = '<p>Cannot load archived prayers for the current list.</p>'; return; }
+    const currentList = allPrayerData[activeListName]; archivedActiveListDiv.innerHTML = '';
+    if (currentList.archivedActive.length === 0) { archivedActiveListDiv.innerHTML = '<p>No active prayers have been archived for this list yet.</p>'; } else {
+        // Helper for date comparison, robust for N/A or invalid dates
+        const compareDates = (dateStrA, dateStrB, ascending = true) => {
+            const parseDate = (dateStr) => {
+                if (!dateStr || dateStr === 'N/A') return null;
+                let date = new Date(dateStr);
+                if (!isNaN(date.getTime())) { return date.getTime(); }
+                const parts = dateStr.split('/'); // MM/DD/YYYY
+                if (parts.length === 3) {
+                    date = new Date(parts[2], parseInt(parts[0],10) - 1, parts[1]);
+                    if (!isNaN(date.getTime())) return date.getTime();
+                }
+                return null;
+            };
+            const timeA = parseDate(dateStrA); const timeB = parseDate(dateStrB);
+            // Treat null dates as very far in the future for ascending, very far past for descending
+            const valA = timeA === null ? (ascending ? Infinity : -Infinity) : timeA;
+            const valB = timeB === null ? (ascending ? Infinity : -Infinity) : timeB;
+            return ascending ? (valA - valB) : (valB - valA);
+        };
+        // Sort archived active prayers by dateAdded descending (newest first)
+        const sortedArchivedActive = [...currentList.archivedActive].sort((a, b) => compareDates(a.dateAdded, b.dateAdded, false));
+
+        sortedArchivedActive.forEach((prayer) => {
+            const prayerItem = document.createElement('div'); prayerItem.classList.add('prayer-item');
+            let priorityIndicator = ''; if (prayer.priority) { const priorityClass = `priority-${prayer.priority.toLowerCase()}`; priorityIndicator = `<span class="priority-indicator ${priorityClass}" title="Priority: ${prayer.priority}"></span>`; }
+            const dateDisplay = prayer.dateNeeded ? `<p><strong>Expected:</strong> ${prayer.dateNeeded}</p>` : '';
+            const addedDateDisplay = prayer.dateAdded && prayer.dateAdded !== 'N/A' ? `<p><strong>Added:</strong> ${prayer.dateAdded}</p>` : '';
+            const categoryDisplay = `<p class="prayer-category"><strong>Category:</strong> ${prayer.category || 'N/A'}</p>`;
+            const nameDisplay = `<p><strong>Name:</strong> ${priorityIndicator}${prayer.name || 'Unnamed'}</p>`;
+            const tagsDisplay = prayer.tags && prayer.tags.length > 0 ? `<div class="prayer-tags-container">${prayer.tags.map(tag => `<span class="prayer-tag">${tag}</span>`).join('')}</div>` : '';
+            const linkInfo = prayer.linkedPrayerId ? `<span class="linked-prayer-info">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span>` : '';
+            const currentArrayIndex = currentList.archivedActive.findIndex(p => p.prayerId === prayer.prayerId); // Find index in original unsorted array for unarchiving
+
+            prayerItem.innerHTML = `<button class="unarchive-button" data-index="${currentArrayIndex}" title="Move back to Active List"><i class="fas fa-box-open"></i></button>${nameDisplay}<p><strong>Request:</strong> ${prayer.request}</p>${categoryDisplay}${tagsDisplay}${linkInfo}${addedDateDisplay}${dateDisplay}`;
+            archivedActiveListDiv.appendChild(prayerItem);
+
+            const unarchiveButton = prayerItem.querySelector('.unarchive-button');
+            if (unarchiveButton) {
+                unarchiveButton.addEventListener('click', (event) => {
+                    const indexToUnarchive = parseInt(event.currentTarget.dataset.index, 10);
+                    unarchiveActivePrayer(indexToUnarchive);
+                });
+            }
+        });
+    }
+    archivedActiveModal.style.display = 'flex';
+}
+
+// --- Main Prayer Display Logic ---
+function displayPrayers() {
+    prayerListDiv.innerHTML = '';
+    if (!allPrayerData[activeListName]) { console.error("Active list not found:", activeListName); prayerListDiv.innerHTML = `<center><p style="grid-column: 1 / -1;">Error: Could not load list "${activeListName}".</p></center>`; showMoreButton.style.display = 'none'; return; }
+
+    const currentList = allPrayerData[activeListName];
+    let activePrayers = currentList.requests.filter(prayer => !prayer.status || (prayer.status !== 'Yes' && prayer.status !== 'No'));
+
+    // Apply Filters
+    const selectedPriority = priorityFilterSelect.value; if (selectedPriority && selectedPriority !== 'all') { activePrayers = activePrayers.filter(p => p.priority === selectedPriority); }
+    const selectedTag = customTagFilterSelect.value; if (selectedTag && selectedTag !== 'all') { activePrayers = activePrayers.filter(p => p.tags && p.tags.includes(selectedTag)); }
+    const query = currentSearchQuery.toLowerCase().trim(); if (query) { activePrayers = activePrayers.filter(p => { const nameMatch = (p.name || '').toLowerCase().includes(query); const categoryMatch = (p.category || '').toLowerCase().includes(query); const requestMatch = (p.request || '').toLowerCase().includes(query); const journalMatch = p.journalNotes && p.journalNotes.some(entry => (entry.note || '').toLowerCase().includes(query)); const tagsMatch = p.tags && p.tags.some(tag => tag.toLowerCase().includes(query)); return nameMatch || categoryMatch || requestMatch || journalMatch || tagsMatch; }); }
+
+    // Handle empty list after filtering
+    if (activePrayers.length === 0 && currentlyEditing === null) {
+        let message = `No active prayer requests in the "${activeListName}" list.`;
+        const priorityActive = selectedPriority && selectedPriority !== 'all';
+        const customTagActive = selectedTag && selectedTag !== 'all';
+        const searchActive = query;
+        if (priorityActive || customTagActive || searchActive) {
+            message = `No prayer requests in "${activeListName}" match`;
+            if (searchActive) message += ` your search for "${currentSearchQuery}"`;
+            let filterClauses = [];
+            if (priorityActive) { filterClauses.push(`the "${selectedPriority}" priority filter`); }
+            if (customTagActive) { filterClauses.push(`the "${selectedTag}" custom tag filter`); }
+            if (filterClauses.length > 0) {
+                if (searchActive && filterClauses.length > 0) message += " within ";
+                else if (!searchActive && filterClauses.length > 0) message += " ";
+                message += filterClauses.join(" and ");
+            }
+            message += ".";
+        }
+        prayerListDiv.innerHTML = `<center><p style="grid-column: 1 / -1;">${message}</p></center>`;
+        showMoreButton.style.display = 'none';
+        return;
+    }
+
+    // Sort Prayers
+    let prayersToSort = [...activePrayers];
+    const pinnedItems = prayersToSort.filter(p => p.pinned);
+    const unpinnedItems = prayersToSort.filter(p => !p.pinned);
+
+    const compareDates = (dateStrA, dateStrB, ascending = true) => {
+        const parseDate = (dateStr) => {
+            if (!dateStr || dateStr === 'N/A') return null;
+            let date = new Date(dateStr);
+            if (!isNaN(date.getTime())) { return date.getTime(); }
+            const parts = dateStr.split('/'); // MM/DD/YYYY
+            if (parts.length === 3) {
+                date = new Date(parts[2], parseInt(parts[0],10) - 1, parts[1]);
+                if (!isNaN(date.getTime())) return date.getTime();
+            }
+            return null;
+        };
+        const timeA = parseDate(dateStrA); const timeB = parseDate(dateStrB);
+        const valA = timeA === null ? (ascending ? Infinity : -Infinity) : timeA;
+        const valB = timeB === null ? (ascending ? Infinity : -Infinity) : timeB;
+        return ascending ? (valA - valB) : (valB - valA);
+    };
+    const compareNames = (a, b) => { const nameA = (a.name || 'Unnamed').toLowerCase(); const nameB = (b.name || 'Unnamed').toLowerCase(); return nameA.localeCompare(nameB); };
+    const compareCategories = (a, b) => { const catA = (a.category || categories[0]).toLowerCase(); const catB = (b.category || categories[0]).toLowerCase(); return catA.localeCompare(catB); };
+
+    let sortedUnpinnedItems = [];
+    switch (currentSortCriteria) {
+        case 'name': sortedUnpinnedItems = unpinnedItems.sort(compareNames); break;
+        case 'category': sortedUnpinnedItems = unpinnedItems.sort(compareCategories); break;
+        case 'expectedDate': sortedUnpinnedItems = unpinnedItems.sort((a, b) => compareDates(a.dateNeeded, b.dateNeeded, true)); break;
+        case 'default': default: sortedUnpinnedItems = unpinnedItems.sort((a, b) => compareDates(a.dateAdded, b.dateAdded, false)); break; // Newest first
+    }
+    const sortedPrayers = [...pinnedItems, ...sortedUnpinnedItems]; // Pinned items always first
+
+    // Render Prayers
+    let displayedCount = 0;
+    for (let i = 0; i < sortedPrayers.length; i++) {
+        const prayer = sortedPrayers[i];
+        const originalIndex = currentList.requests.findIndex(p => p.prayerId === prayer.prayerId); // Get original index for actions
+
+        if (currentlyEditing === originalIndex) continue; // Skip if being edited
+        if (displayedCount >= visiblePrayerCount) break; // Pagination
+
+        const prayerItem = document.createElement('div');
+        prayerItem.classList.add('prayer-item');
+        if (prayer.pinned) { prayerItem.classList.add('pinned'); }
+
+        let priorityIndicator = ''; if (prayer.priority) { const priorityClass = `priority-${prayer.priority.toLowerCase()}`; priorityIndicator = `<span class="priority-indicator ${priorityClass}" title="Priority: ${prayer.priority}"></span>`; }
+        const dateNeededDisplay = prayer.dateNeeded ? `<p>${prayer.dateNeeded}</p>` : '';
+        const dateAddedDisplay = prayer.dateAdded && prayer.dateAdded !== 'N/A' ? `<p>${prayer.dateAdded}</p>` : '';
+        const dateInfoHtml = (dateAddedDisplay || dateNeededDisplay) ? `<div class="date-info"><strong>Requested:</strong> ${dateAddedDisplay} ${dateNeededDisplay ? `<strong>Expected:</strong> ${dateNeededDisplay}` : ''}</div>` : '';
+        const categoryDisplay = `<p class="prayer-category"><strong>Category:</strong> ${prayer.category || 'N/A'}</p>`;
+        const nameDisplay = `<p><strong>${priorityIndicator}${prayer.name || 'Unnamed'}</strong></p>`;
+        const requestDisplay = `<p><strong>Request: </strong>${prayer.request}</p>`;
+        const tagsDisplay = prayer.tags && prayer.tags.length > 0 ? `<div class="prayer-tags-container"><strong>Tags:</strong> ${prayer.tags.map(tag => `<span class="prayer-tag">${tag}</span>`).join(' ')}</div>` : '';
+        const linkInfo = prayer.linkedPrayerId ? `<span class="linked-prayer-info">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span>` : '';
+
+        const buttonsHtml = `
+            <button class="pin-button" data-index="${originalIndex}" title="${prayer.pinned ? 'Unpin' : 'Pin'} Prayer"><i class="fas fa-thumbtack"></i></button>
+            <button class="archive-active-button" data-index="${originalIndex}" title="Archive This Active Prayer"><i class="fas fa-archive"></i></button>
+            <button class="edit-button" data-index="${originalIndex}" title="Edit Prayer"><i class="fas fa-edit"></i></button>
+            <button class="maximize-button" data-index="${originalIndex}" title="Maximize View"><i class="fas fa-expand-arrows-alt"></i></button>
+            <button class="mark-answered-button" data-index="${originalIndex}" title="Mark as Answered"><i class="fas fa-check"></i></button>
+            <button class="mark-not-granted-button" data-index="${originalIndex}" title="Mark as Not Granted"><i class="fas fa-times"></i></button>
+            <button class="delete-button" data-index="${originalIndex}" title="Delete Prayer"><i class="fas fa-trash-alt"></i></button>
+        `;
+
+        prayerItem.innerHTML = `
+            ${nameDisplay}
+            ${requestDisplay}
+            ${categoryDisplay}
+            ${tagsDisplay}
+            ${linkInfo}
+            ${dateInfoHtml}
+            <div class="prayer-controls">
+                <button class="prayer-item-more-options-button" title="More actions"><i class="fas fa-ellipsis-v"></i></button>
+                <div class="prayer-item-actions-dropdown">
+                    ${buttonsHtml}
+                </div>
+                ${buttonsHtml}
+            </div>`;
+
+        prayerListDiv.appendChild(prayerItem);
+        displayedCount++;
+
+        // Attach event listeners to all buttons (direct and in dropdown)
+        prayerItem.querySelectorAll('.mark-answered-button').forEach(btn => btn.addEventListener('click', (event) => markAsAnswered(parseInt(event.currentTarget.dataset.index, 10))));
+        prayerItem.querySelectorAll('.mark-not-granted-button').forEach(btn => btn.addEventListener('click', (event) => markAsNotGranted(parseInt(event.currentTarget.dataset.index, 10))));
+        prayerItem.querySelectorAll('.archive-active-button').forEach(btn => btn.addEventListener('click', (event) => archiveActivePrayer(parseInt(event.currentTarget.dataset.index, 10))));
+        prayerItem.querySelectorAll('.pin-button').forEach(btn => btn.addEventListener('click', (event) => togglePin(parseInt(event.currentTarget.dataset.index, 10))));
+        prayerItem.querySelectorAll('.edit-button').forEach(btn => btn.addEventListener('click', (event) => showEditForm(parseInt(event.currentTarget.dataset.index, 10))));
+        prayerItem.querySelectorAll('.maximize-button').forEach(btn => btn.addEventListener('click', () => showMaximizedView(originalIndex))); // Pass originalIndex
+        prayerItem.querySelectorAll('.delete-button').forEach(btn => btn.addEventListener('click', (event) => {
+            const indexToConfirm = parseInt(event.currentTarget.dataset.index, 10);
+            if (allPrayerData[activeListName] && indexToConfirm >= 0 && indexToConfirm < allPrayerData[activeListName].requests.length) {
+                const prayerToDelete = allPrayerData[activeListName].requests[indexToConfirm];
+                const prayerName = prayerToDelete.name || 'this prayer request';
+                const message = `Are you sure you want to permanently delete the prayer request "<strong>${prayerName}</strong>"?<br><br>This cannot be undone.`;
+                showConfirmationModal(message, () => { deletePrayer(indexToConfirm); }, 'Delete Prayer Request', 'Delete', '#e74c3c');
+            } else {
+                console.error("Could not find prayer to delete at index:", indexToConfirm);
+                alert("Error: Could not find the prayer request to delete.");
+                displayPrayers(); // Refresh list to correct state
+            }
+        }));
+
+        // Listener for the "more options" button on each card
+        const moreOptionsBtn = prayerItem.querySelector('.prayer-item-more-options-button');
+        const actionsDropdown = prayerItem.querySelector('.prayer-item-actions-dropdown');
+        if (moreOptionsBtn && actionsDropdown) {
+            moreOptionsBtn.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from bubbling to window and closing immediately
+                // Close all other open item dropdowns first
+                document.querySelectorAll('.prayer-item-actions-dropdown.active').forEach(d => {
+                    if (d !== actionsDropdown) { // Don't close the one we are trying to open/toggle
+                        d.classList.remove('active');
+                    }
+                });
+                actionsDropdown.classList.toggle('active');
+            });
+        }
+    }
+    showMoreButton.style.display = (sortedPrayers.length > displayedCount) ? 'block' : 'none';
+}
+
+// --- Maximized View ---
+function showMaximizedView(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return; const prayer = allPrayerData[activeListName].requests[index]; if (!prayer) { console.error("Invalid prayer object for maximize view"); return; }
+    const tagsMaximizedDisplay = prayer.tags && prayer.tags.length > 0 ? `<p><strong>Tags:</strong> ${prayer.tags.join(', ')}</p>` : ''; const priorityMaximizedDisplay = prayer.priority ? `<p><strong>Priority:</strong> ${prayer.priority}</p>` : ''; const linkInfo = prayer.linkedPrayerId ? `<p><span class="linked-prayer-info" style="margin-top:0; font-style:normal;">Linked to: <strong>${prayer.linkedPrayerName || prayer.linkedPrayerId}</strong></span></p>` : '';
+    let journalHtml = '<p><strong>Journal:</strong></p>'; if (prayer.journalNotes && prayer.journalNotes.length > 0) { journalHtml += '<div class="journal-notes-display" style="max-height: none; border: none; padding: 0;">'; [...prayer.journalNotes].reverse().forEach(entry => { journalHtml += `<div class="journal-entry" style="border-color: #eee;"><strong>${entry.date || '??/??/????'}</strong><p>${entry.note || ''}</p></div>`; }); journalHtml += '</div>'; } else { journalHtml += '<p><i>No journal entries.</i></p>'; }
+    maximizedContent.innerHTML = `<p><strong>Name:</strong> ${prayer.name || 'Unnamed'}</p><p><strong>Request:</strong> ${prayer.request}</p><p><strong>Category:</strong> ${prayer.category || 'N/A'}</p>${priorityMaximizedDisplay}${tagsMaximizedDisplay}${linkInfo}${prayer.dateAdded && prayer.dateAdded !== 'N/A' ? `<p><strong>Added:</strong> ${prayer.dateAdded}</p>` : ''}${prayer.dateNeeded ? `<p><strong>Expected:</strong> ${prayer.dateNeeded}</p>` : ''}<hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">${journalHtml}`;
+    setFontSize(FONT_SIZE_NORMAL); // Default font size
+    maximizedView.style.display = 'flex';
+}
+
+// --- Prayer CRUD and State Changes ---
+function addPrayer(name, request, category, priority, dateNeeded, firstNoteText, tagsInput, linkedPrayerId) {
+    if (!allPrayerData[activeListName]) return; // Should not happen if list selector is working
+    const prayerId = generateUniqueId();
+    const dateAdded = new Date().toLocaleDateString();
+    const prayerCategory = category || categories[0]; // Default if not provided
+    const prayerPriority = priority || priorities[1]; // Default if not provided
+    const tags = parseTags(tagsInput);
+    const journalNotes = [];
+    if (firstNoteText && firstNoteText.trim() !== '') {
+        journalNotes.push({ date: dateAdded, note: firstNoteText.trim() });
+    }
+    let linkedPrayerName = null;
+    if (linkedPrayerId) {
+        const linkedPrayer = allPrayerData[activeListName]?.requests.find(p => p.prayerId === linkedPrayerId);
+        if(linkedPrayer) { linkedPrayerName = linkedPrayer.name || 'Unnamed'; }
+    }
+
+    allPrayerData[activeListName].requests.push({ prayerId, name, request, category: prayerCategory, priority: prayerPriority, dateNeeded, journalNotes, status: '', pinned: false, dateAdded: dateAdded, tags: tags, linkedPrayerId: linkedPrayerId || null, linkedPrayerName: linkedPrayerName });
+    savePrayers(); closeAddPrayerModal(); visiblePrayerCount = 4; // Reset pagination
+    populateCustomTagFilterDropdown(); // Update tags filter
+    displayPrayers(); updateStatsDisplay();
+}
+function populateJournalDisplayInEditModal(index) {
+    const journalDisplay = document.getElementById('journal-notes-display');
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) { journalDisplay.innerHTML = '<p><i>Error loading notes.</i></p>'; return; };
+    const currentList = allPrayerData[activeListName];
+    const prayer = currentList.requests[index];
+    journalDisplay.innerHTML = ''; // Clear previous notes
+    if (prayer.journalNotes && prayer.journalNotes.length > 0) {
+        [...prayer.journalNotes].reverse().forEach(entry => { // Display newest first
+            const entryDiv = document.createElement('div');
+            entryDiv.classList.add('journal-entry');
+            entryDiv.innerHTML = `<strong>${entry.date || '??/??/????'}</strong><p>${entry.note || ''}</p>`;
+            journalDisplay.appendChild(entryDiv);
+        });
+    } else {
+        journalDisplay.innerHTML = '<p><i>No journal notes added yet.</i></p>';
+    }
+}
+function addJournalNoteToPrayer(prayerIndex, noteText) {
+    if (!noteText || noteText.trim() === '') { alert("Please enter a note to add."); return; }
+    if (!allPrayerData[activeListName] || prayerIndex < 0 || prayerIndex >= allPrayerData[activeListName].requests.length) { console.error("Invalid index or list for adding journal note:", prayerIndex, activeListName); return; }
+    const prayer = allPrayerData[activeListName].requests[prayerIndex];
+    const today = new Date().toLocaleDateString();
+    if (!prayer.journalNotes) { prayer.journalNotes = []; } // Initialize if it doesn't exist
+    prayer.journalNotes.push({ date: today, note: noteText.trim() });
+    savePrayers();
+    // No UI refresh here, handled by showEditForm's re-population
+}
+function showEditForm(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+    currentlyEditing = index;
+    const prayer = allPrayerData[activeListName].requests[index];
+    document.getElementById('edit-index').value = index;
+    document.getElementById('edit-name').value = prayer.name || '';
+    document.getElementById('edit-request').value = prayer.request || '';
+    document.getElementById('edit-category').value = prayer.category || categories[0];
+    document.getElementById('edit-priority').value = prayer.priority || priorities[1];
+    document.getElementById('edit-date').value = prayer.dateNeeded || '';
+    document.getElementById('edit-status').value = prayer.status || '';
+    document.getElementById('edit-tags').value = prayer.tags ? prayer.tags.join(', ') : '';
+
+    const newNoteTextarea = document.getElementById('edit-new-journal-note');
+    const addNoteButton = document.getElementById('add-journal-note-button');
+
+    populateJournalDisplayInEditModal(index); // Display existing notes
+    newNoteTextarea.value = ''; // Clear the "add new note" textarea
+
+    populateLinkDropdown('edit-link-to-prayer', prayer.prayerId); // Populate link dropdown, excluding self
+    editLinkSelect.value = prayer.linkedPrayerId || ""; // Set current linked prayer
+
+    // Re-attach event listener for "Add Note" to avoid multiple bindings
+    addNoteButton.replaceWith(addNoteButton.cloneNode(true)); // Clone to remove old listeners
+    document.getElementById('add-journal-note-button').addEventListener('click', () => {
+        addJournalNoteToPrayer(index, newNoteTextarea.value);
+        newNoteTextarea.value = ''; // Clear textarea after adding
+        populateJournalDisplayInEditModal(index); // Refresh journal display
+    });
+    openEditPrayerModal();
+}
+function updatePrayer(index, name, request, category, priority, dateNeeded, status, tagsInput, linkedPrayerId) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+
+    const currentList = allPrayerData[activeListName];
+    const originalPrayer = currentList.requests[index];
+    const prayerCategory = category || categories[0];
+    const prayerPriority = priority || priorities[1];
+    const previousStatus = originalPrayer.status;
+    const tags = parseTags(tagsInput);
+
+    let linkedPrayerName = null;
+    const finalLinkedId = linkedPrayerId || null; // Ensure it's null if empty string
+    if (finalLinkedId) {
+        const linkedPrayer = currentList.requests.find(p => p.prayerId === finalLinkedId);
+        if (linkedPrayer) {
+            linkedPrayerName = linkedPrayer.name || 'Unnamed';
+        } else {
+            // If linked prayer ID is somehow invalid (not found in requests), store the ID itself as name
+            linkedPrayerName = finalLinkedId;
+        }
+    }
+
+    // Update the prayer object in the requests array
+    currentList.requests[index] = {
+        ...originalPrayer, // Preserve existing fields like prayerId, journalNotes, pinned, dateAdded
+        name,
+        request,
+        category: prayerCategory,
+        priority: prayerPriority,
+        dateNeeded: dateNeeded || '', // Ensure empty string if not provided
+        status: status || '', // Ensure empty string for 'Active'
+        tags: tags,
+        linkedPrayerId: finalLinkedId,
+        linkedPrayerName: linkedPrayerName
+    };
+    const updatedPrayer = currentList.requests[index];
+
+    // Handle answeredDate based on status change
+    if (updatedPrayer.status === 'Yes' && previousStatus !== 'Yes') {
+        updatedPrayer.answeredDate = new Date().toLocaleDateString();
+    } else if (updatedPrayer.status !== 'Yes') {
+        delete updatedPrayer.answeredDate; // Remove answeredDate if not 'Yes'
+    }
+
+    // Synchronize with other arrays (answered, notGranted, archivedActive) based on new status
+    const answeredIndex = currentList.answered.findIndex(p => p.prayerId === updatedPrayer.prayerId);
+    const notGrantedIndex = currentList.notGranted.findIndex(p => p.prayerId === updatedPrayer.prayerId);
+    const archivedActiveIndex = currentList.archivedActive.findIndex(p => p.prayerId === updatedPrayer.prayerId);
+
+    // Remove from other status arrays if status has changed
+    if (answeredIndex > -1 && updatedPrayer.status !== 'Yes') { currentList.answered.splice(answeredIndex, 1); }
+    if (notGrantedIndex > -1 && updatedPrayer.status !== 'No') { currentList.notGranted.splice(notGrantedIndex, 1); }
+    if (archivedActiveIndex > -1 && updatedPrayer.status !== '') { /* If it was archivedActive and now has a status, it shouldn't be in archivedActive */ currentList.archivedActive.splice(archivedActiveIndex, 1); }
+
+
+    // Add to the correct status array if not already there
+    if (updatedPrayer.status === 'Yes' && answeredIndex === -1) {
+        if (notGrantedIndex > -1) currentList.notGranted.splice(notGrantedIndex, 1); // Remove from notGranted if it was there
+        if (archivedActiveIndex > -1) currentList.archivedActive.splice(archivedActiveIndex, 1); // Remove from archivedActive
+        currentList.answered.push(updatedPrayer);
+    } else if (updatedPrayer.status === 'No' && notGrantedIndex === -1) {
+        if (answeredIndex > -1) currentList.answered.splice(answeredIndex, 1); // Remove from answered
+        if (archivedActiveIndex > -1) currentList.archivedActive.splice(archivedActiveIndex, 1); // Remove from archivedActive
+        currentList.notGranted.push(updatedPrayer);
+    } else if (updatedPrayer.status === '' && (answeredIndex > -1 || notGrantedIndex > -1 || archivedActiveIndex > -1)) {
+        // If status is now 'Active' and it was in another list, remove it from those lists
+        if(answeredIndex > -1) currentList.answered.splice(answeredIndex, 1);
+        if(notGrantedIndex > -1) currentList.notGranted.splice(notGrantedIndex, 1);
+        if(archivedActiveIndex > -1) currentList.archivedActive.splice(archivedActiveIndex, 1);
+        // Ensure it's in requests array (it should be, as we updated it in place)
+        if(!currentList.requests.some(p => p.prayerId === updatedPrayer.prayerId)) {
+            currentList.requests.splice(index, 0, updatedPrayer); // Re-insert if somehow removed
+        }
+    }
+
+
+    savePrayers();
+    currentlyEditing = null; // Reset editing state
+    closeEditPrayerModal();
+    populateCustomTagFilterDropdown(); // Tags might have changed
+    displayPrayers();
+    updateStatsDisplay();
+}
+function deletePrayer(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+
+    const currentList = allPrayerData[activeListName];
+    const prayerToDelete = currentList.requests[index];
+    const prayerIdToDelete = prayerToDelete.prayerId;
+
+    // Remove from the main requests list
+    currentList.requests.splice(index, 1);
+
+    // Also remove from any other status lists it might be in (though ideally it's only in one)
+    const removeById = (arr, id) => { const idx = arr.findIndex(p => p.prayerId === id); if (idx > -1) arr.splice(idx, 1); };
+    removeById(currentList.answered, prayerIdToDelete);
+    removeById(currentList.notGranted, prayerIdToDelete);
+    removeById(currentList.history, prayerIdToDelete); // Also check history lists
+    removeById(currentList.notGrantedHistory, prayerIdToDelete);
+    removeById(currentList.archivedActive, prayerIdToDelete);
+
+    savePrayers();
+
+    // Adjust currentlyEditing index if necessary
+    if (currentlyEditing === index) {
+        currentlyEditing = null;
+        closeEditPrayerModal(); // Close modal if the deleted item was being edited
+    } else if (currentlyEditing !== null && currentlyEditing > index) {
+        currentlyEditing--; // Adjust index if an item before the edited one was deleted
+        if (editPrayerModal.style.display === 'flex') { // Update hidden input if edit modal is open
+            document.getElementById('edit-index').value = currentlyEditing;
+        }
+    }
+
+    populateCustomTagFilterDropdown(); // Tags might have changed
+    displayPrayers();
+    updateStatsDisplay();
+}
+function togglePin(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+    allPrayerData[activeListName].requests[index].pinned = !allPrayerData[activeListName].requests[index].pinned;
+    savePrayers(); displayPrayers();
+}
+function markAsAnswered(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+    const currentList = allPrayerData[activeListName];
+    const prayer = currentList.requests[index];
+
+    if (prayer.status !== 'Yes') { // Only proceed if not already 'Yes'
+        prayer.status = 'Yes';
+        prayer.answeredDate = new Date().toLocaleDateString();
+
+        // Remove from notGranted or archivedActive if it was there
+        const notGrantedIdx = currentList.notGranted.findIndex(p => p.prayerId === prayer.prayerId);
+        if (notGrantedIdx > -1) currentList.notGranted.splice(notGrantedIdx, 1);
+        const archivedActiveIdx = currentList.archivedActive.findIndex(p => p.prayerId === prayer.prayerId);
+        if (archivedActiveIdx > -1) currentList.archivedActive.splice(archivedActiveIdx, 1);
+
+        // Add to answered list if not already present (shouldn't be)
+        if (!currentList.answered.some(p => p.prayerId === prayer.prayerId)) {
+            currentList.answered.push(prayer);
+        }
+        currentList.requests.splice(index, 1); // Remove from active requests
+        savePrayers(); displayPrayers(); updateStatsDisplay();
+    }
+}
+function markAsNotGranted(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+    const currentList = allPrayerData[activeListName];
+    const prayer = currentList.requests[index];
+
+    if (prayer.status !== 'No') { // Only proceed if not already 'No'
+        prayer.status = 'No';
+        delete prayer.answeredDate; // Remove answeredDate if it existed
+
+        // Remove from answered or archivedActive if it was there
+        const answeredIdx = currentList.answered.findIndex(p => p.prayerId === prayer.prayerId);
+        if (answeredIdx > -1) currentList.answered.splice(answeredIdx, 1);
+        const archivedActiveIdx = currentList.archivedActive.findIndex(p => p.prayerId === prayer.prayerId);
+        if (archivedActiveIdx > -1) currentList.archivedActive.splice(archivedActiveIdx, 1);
+
+        // Add to notGranted list if not already present
+        if (!currentList.notGranted.some(p => p.prayerId === prayer.prayerId)) {
+            currentList.notGranted.push(prayer);
+        }
+        currentList.requests.splice(index, 1); // Remove from active requests
+        savePrayers(); displayPrayers(); updateStatsDisplay();
+    }
+}
+function archiveAnsweredPrayer(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].answered.length) return;
+    const currentList = allPrayerData[activeListName];
+    const archivedPrayer = currentList.answered.splice(index, 1)[0]; // Remove and get the prayer
+    archivedPrayer.archivedDate = new Date().toLocaleDateString();
+    currentList.history.push(archivedPrayer);
+    savePrayers(); displayAnsweredPrayersModal(); if (viewingHistory) displayHistory(); // Refresh history if open
+}
+function archiveNotGrantedPrayer(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].notGranted.length) return;
+    const currentList = allPrayerData[activeListName];
+    const archivedPrayer = currentList.notGranted.splice(index, 1)[0];
+    archivedPrayer.archivedDate = new Date().toLocaleDateString();
+    currentList.notGrantedHistory.push(archivedPrayer);
+    savePrayers(); displayNotGrantedPrayersModal(); if (viewingNotGrantedHistory) displayNotGrantedHistory();
+}
+function archiveActivePrayer(index) {
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].requests.length) return;
+    const currentList = allPrayerData[activeListName];
+    const prayerToArchive = currentList.requests.splice(index, 1)[0]; // Remove from active
+    if (prayerToArchive) {
+        // No status change, just move to archivedActive
+        currentList.archivedActive.push(prayerToArchive);
+        savePrayers(); displayPrayers(); updateStatsDisplay();
+    } else {
+        console.error("Could not find prayer to archive at index:", index);
+    }
+}
+function unarchiveActivePrayer(index) {
+    // Note: index here is for the 'archivedActive' array
+    if (!allPrayerData[activeListName] || index < 0 || index >= allPrayerData[activeListName].archivedActive.length) { console.error("Invalid index or list for unarchiving active prayer:", index, activeListName); return; }
+    const currentList = allPrayerData[activeListName];
+    const prayerToUnarchive = currentList.archivedActive.splice(index, 1)[0];
+    if (prayerToUnarchive) {
+        prayerToUnarchive.status = ''; // Set back to active
+        delete prayerToUnarchive.answeredDate; // Clear any residual answered date
+        currentList.requests.push(prayerToUnarchive); // Add back to active requests
+        savePrayers();
+        displayArchivedActiveModal(); // Refresh the modal it came from
+        displayPrayers(); // Refresh main list
+        updateStatsDisplay();
+    } else {
+        console.error("Could not find prayer to unarchive at index:", index);
+    }
+}
+
+// --- List Management Functions ---
+function renameCurrentList() {
+    if (!activeListName || !allPrayerData[activeListName]) { alert("No active list selected or list data is missing."); return; }
+    const currentName = activeListName;
+    const newName = prompt(`Enter new name for the list "${currentName}":`, currentName);
+    if (newName === null) return; // User cancelled
+    const trimmedNewName = newName.trim();
+    if (trimmedNewName === "") { alert("List name cannot be empty."); return; }
+    if (trimmedNewName === currentName) return; // No change
+    if (allPrayerData[trimmedNewName]) { alert(`A list named "${trimmedNewName}" already exists. Please choose a different name.`); return; }
+
+    try {
+        const listData = allPrayerData[currentName]; // Get data
+        delete allPrayerData[currentName];          // Delete old entry
+        allPrayerData[trimmedNewName] = listData;   // Add new entry with old data
+        activeListName = trimmedNewName;            // Update active list name
+        populateListSelector();                     // Refresh dropdown
+        savePrayers();
+        alert(`List "${currentName}" renamed to "${trimmedNewName}".`);
+    } catch (error) {
+        console.error("Error renaming list:", error);
+        alert("An error occurred while renaming the list.");
+        // Attempt to revert if something went wrong
+        if (!allPrayerData[trimmedNewName] && listData) { // If new name wasn't created but old data exists
+            allPrayerData[currentName] = listData; // Restore old list
+        }
+        activeListName = currentName; // Revert active list name
+        populateListSelector(); // Refresh selector
+    }
+}
+function deleteCurrentList() {
+    const listToDelete = activeListName;
+    if (!listToDelete || !allPrayerData[listToDelete]) { alert("No active list selected or list data is missing."); return; }
+    const listNames = Object.keys(allPrayerData);
+    if (listNames.length <= 1) { alert("Cannot delete the only remaining prayer list."); return; }
+
+    const message = `<strong>WARNING!</strong><br><br>Are you sure you want to permanently delete the list "<strong>${listToDelete}</strong>" and ALL prayers within it?<br><br>This action cannot be undone.`;
+    showConfirmationModal(message, () => {
+        try {
+            delete allPrayerData[listToDelete];
+            const remainingListNames = Object.keys(allPrayerData);
+            // Determine the new active list: prefer default, then first sorted, or create default if none left
+            let newActiveListName = remainingListNames.includes(DEFAULT_LIST_NAME) ? DEFAULT_LIST_NAME : (remainingListNames.sort((a,b) => a.localeCompare(b))[0] || '');
+            if (!newActiveListName) { // Should only happen if all lists were somehow deleted, which is prevented above
+                allPrayerData[DEFAULT_LIST_NAME] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+                newActiveListName = DEFAULT_LIST_NAME;
+            }
+            activeListName = newActiveListName;
+            populateListSelector();
+            savePrayers();
+            displayPrayers(); // Refresh view to new active list
+            updateStatsDisplay();
+            alert(`List "${listToDelete}" has been deleted.`);
+        } catch (error) {
+            console.error("Error deleting list:", error);
+            alert("An error occurred while deleting the list.");
+        }
+    }, 'Delete List', 'Delete List', '#e74c3c');
+}
+
+// --- Data Import/Export ---
+function exportData() {
+    try {
+        const jsonString = JSON.stringify(allPrayerData, null, 2); // Pretty print JSON
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        a.download = `praycher_data_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("All list data exported successfully!");
+    } catch (error) {
+        console.error("Error exporting data:", error);
+        alert("An error occurred while exporting data.");
+    }
+}
+
+/**
+ * Ensures a single prayer object has all necessary fields and valid values.
+ * @param {object} prayer - The prayer object to validate.
+ * @returns {object} The validated (and potentially corrected) prayer object.
+ */
+function ensurePrayerIntegrity(prayer) {
+    const defaults = {
+        prayerId: generateUniqueId(),
+        name: 'Unnamed Import',
+        request: 'No details provided.',
+        category: categories[0],
+        priority: priorities[1],
+        dateNeeded: '',
+        journalNotes: [],
+        status: '', // Active
+        pinned: false,
+        dateAdded: new Date().toLocaleDateString(),
+        tags: [],
+        linkedPrayerId: null,
+        linkedPrayerName: null,
+        answeredDate: undefined, // Should only exist if status is 'Yes'
+        archivedDate: undefined // Not typically imported, but good to handle
+    };
+
+    // Create a new object, starting with defaults, then overlaying the prayer's properties
+    let validatedPrayer = { ...defaults, ...prayer };
+
+    // Specific checks and corrections
+    if (!validatedPrayer.prayerId) validatedPrayer.prayerId = generateUniqueId(); // Ensure ID
+    if (typeof validatedPrayer.name !== 'string') validatedPrayer.name = defaults.name;
+    if (typeof validatedPrayer.request !== 'string') validatedPrayer.request = defaults.request;
+    if (!categories.includes(validatedPrayer.category)) validatedPrayer.category = defaults.category;
+    if (!priorities.includes(validatedPrayer.priority)) validatedPrayer.priority = defaults.priority;
+    validatedPrayer.pinned = !!validatedPrayer.pinned; // Ensure boolean
+    if (!['', 'Yes', 'No'].includes(validatedPrayer.status)) validatedPrayer.status = defaults.status;
+    if (!Array.isArray(validatedPrayer.tags)) validatedPrayer.tags = [];
+    else validatedPrayer.tags = validatedPrayer.tags.map(t => String(t).trim()).filter(t => t); // Ensure tags are strings and trimmed
+
+    if (!Array.isArray(validatedPrayer.journalNotes)) validatedPrayer.journalNotes = [];
+    else { // Validate journal entries
+        validatedPrayer.journalNotes = validatedPrayer.journalNotes.map(entry => ({
+            date: entry.date || new Date().toLocaleDateString(),
+            note: String(entry.note || '').trim()
+        })).filter(entry => entry.note);
+    }
+
+    if (validatedPrayer.linkedPrayerId === undefined) validatedPrayer.linkedPrayerId = null;
+    if (validatedPrayer.linkedPrayerName === undefined) validatedPrayer.linkedPrayerName = null;
+
+    // Handle dates carefully
+    if (validatedPrayer.status === 'Yes' && !validatedPrayer.answeredDate) {
+        validatedPrayer.answeredDate = new Date().toLocaleDateString(); // Add if missing for answered
+    } else if (validatedPrayer.status !== 'Yes') {
+        delete validatedPrayer.answeredDate; // Remove if not answered
+    }
+    // Generally, archivedDate is set during the archive action, not imported.
+    // If it exists on an imported item, it might be from an old export.
+    // We'll clear it unless it's in a history list.
+    // This is handled more specifically in sanitizeAndValidateAllData for history lists.
+    // For now, for items going into 'requests', 'answered', 'notGranted', 'archivedActive', clear it.
+    if (!['history', 'notGrantedHistory'].includes(validatedPrayer.sourceArrayKey)) { // sourceArrayKey is a temporary prop for context
+         delete validatedPrayer.archivedDate;
+    }
+    delete validatedPrayer.sourceArrayKey; // Clean up temporary property
+
+
+    return validatedPrayer;
+}
+
+/**
+ * Sanitizes and validates the entire prayer data structure.
+ * Ensures all lists and prayers within them have the correct structure and valid data.
+ * @param {object} [data=allPrayerData] - The prayer data object to sanitize.
+ */
+function sanitizeAndValidateAllData(data = allPrayerData) {
+    for (const listName in data) {
+        if (typeof data[listName] !== 'object' || data[listName] === null) {
+            console.warn(`Invalid list data found for "${listName}", resetting.`);
+            data[listName] = {}; // Reset to an empty object if structure is wrong
+        }
+        const list = data[listName];
+        const defaultListStructure = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+
+        // Ensure all expected arrays exist
+        for (const key in defaultListStructure) {
+            if (!Array.isArray(list[key])) {
+                console.warn(`Missing or invalid array for "${key}" in list "${listName}", resetting.`);
+                list[key] = []; // Initialize as empty array if missing or not an array
+            }
+        }
+
+        // Validate each prayer in each array
+        Object.keys(defaultListStructure).forEach(arrayKey => {
+            list[arrayKey] = list[arrayKey]
+                .map(p => {
+                    if (typeof p !== 'object' || p === null) return null; // Skip non-objects
+                    p.sourceArrayKey = arrayKey; // Add context for ensurePrayerIntegrity
+                    return ensurePrayerIntegrity(p);
+                })
+                .filter(p => p !== null); // Remove any nulls from invalid entries
+        });
+    }
+
+    // After individual validation, check for duplicate prayerIds across the entire dataset
+    // This is important especially after merging.
+    const allIds = new Set();
+    const idMap = new Map(); // To track where each ID is found first
+
+    for (const listName in data) {
+        const list = data[listName];
+        Object.keys(list).forEach(arrayKey => {
+            if (Array.isArray(list[arrayKey])) {
+                list[arrayKey].forEach(prayer => {
+                    if (allIds.has(prayer.prayerId)) {
+                        // Duplicate ID found.
+                        // Option 1: Regenerate ID (simple, but loses original link if it was intentional)
+                        // Option 2: Try to reconcile (complex, depends on how duplicates should be handled)
+                        // For now, regenerate to ensure data integrity.
+                        console.warn(`Duplicate prayerId (${prayer.prayerId}) found for "${prayer.name}" in list "${listName}", array "${arrayKey}". Regenerating ID.`);
+                        prayer.prayerId = generateUniqueId(); // Regenerate
+                        // Note: This might break intended links if the duplicate was intentional across lists.
+                        // A more sophisticated merge would handle this.
+                    }
+                    allIds.add(prayer.prayerId);
+                    if (!idMap.has(prayer.prayerId)) {
+                        idMap.set(prayer.prayerId, { listName, arrayKey });
+                    }
+                });
+            }
+        });
+    }
+
+
+    // If after all this, the data object is empty, create the default list
+    if (Object.keys(data).length === 0) {
+        console.log("Data was empty or became empty after validation, creating default list.");
+        data[DEFAULT_LIST_NAME] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+    }
+}
+
+/**
+ * Merges imported prayer data with existing data.
+ * @param {object} parsedData - The validated data parsed from the import file.
+ */
+function mergeImportedData(parsedData) {
+    console.log("Starting merge process...");
+    let importedCount = 0;
+    let skippedCount = 0;
+    let newListCount = 0;
+
+    try {
+        // Assume parsedData is already an object of lists due to checks in handleImport
+        // and that both allPrayerData and parsedData have been through sanitizeAndValidateAllData
+
+        for (const listName in parsedData) {
+            console.log(`Processing imported list: "${listName}"`);
+            const importedList = parsedData[listName]; // This is already validated
+
+            if (!allPrayerData[listName]) {
+                console.log(`Creating new list: "${listName}" from import.`);
+                // Create a new, clean list structure for the new list name
+                allPrayerData[listName] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+                newListCount++;
+            }
+            // Current list in allPrayerData is also assumed to be validated
+
+            const currentListInApp = allPrayerData[listName];
+            const prayerArrays = ['requests', 'answered', 'history', 'notGranted', 'notGrantedHistory', 'archivedActive'];
+
+            prayerArrays.forEach(key => {
+                if (Array.isArray(importedList[key])) {
+                    const existingIdsInCurrentArray = new Set(currentListInApp[key].map(p => p.prayerId));
+
+                    importedList[key].forEach(importedPrayer => {
+                        // importedPrayer is already validated and has a prayerId
+                        if (existingIdsInCurrentArray.has(importedPrayer.prayerId)) {
+                            skippedCount++; // Skip if ID already exists in this specific array of this list
+                        } else {
+                            currentListInApp[key].push(importedPrayer); // Add the validated prayer
+                            existingIdsInCurrentArray.add(importedPrayer.prayerId); // Add to set for this array
+                            importedCount++;
+                        }
+                    });
+                }
+            });
+        }
+
+        // After merging all lists and their arrays, run a final global sanitization
+        // This will catch any cross-list ID duplications if they weren't handled by prior sanitization
+        // (though sanitizeAndValidateAllData now includes a global ID check)
+        sanitizeAndValidateAllData(allPrayerData);
+
+        savePrayers();
+        loadPrayers(); // Reload UI to reflect all changes
+        updateStatsDisplay();
+        alert(`Merge complete!\n- ${importedCount} prayers added.\n- ${skippedCount} duplicates skipped.\n- ${newListCount} new lists created.`);
+        console.log(`Merge finished. Added: ${importedCount}, Skipped: ${skippedCount}, New Lists: ${newListCount}`);
+
+    } catch (error) {
+        console.error("Error during merge process:", error);
+        alert(`An error occurred during the merge: ${error.message}\n\nYour data might be partially merged. It's recommended to check your lists or restore from a backup if needed.`);
+    }
+}
+
+/**
+ * Handles the file import process.
+ * @param {Event} event - The file input change event.
+ */
+function handleImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const content = e.target.result;
+        try {
+            let parsedData = JSON.parse(content);
+
+            // Basic validation of the overall structure
+            if (!parsedData || typeof parsedData !== 'object' || Array.isArray(parsedData)) {
+                throw new Error("Invalid file content. Expected an object containing prayer lists.");
+            }
+
+            // Sanitize and validate the imported data *before* showing options or merging
+            sanitizeAndValidateAllData(parsedData);
+
+            showImportOptionsModal(parsedData); // Show options (merge/overwrite)
+
+        } catch (error) {
+            console.error("Error parsing or validating imported data:", error);
+            alert(`Failed to process import file: ${error.message}`);
+        } finally {
+            importFileInput.value = null; // Reset file input regardless of outcome
+        }
+    };
+
+    reader.onerror = function() {
+        console.error("Error reading file:", reader.error);
+        alert("An error occurred while reading the file.");
+        importFileInput.value = null; // Reset file input
+    };
+    reader.readAsText(file);
+}
+function clearAllDataConfirmed() {
+    try {
+        localStorage.clear(); // Clears everything in localStorage for this domain
+        allPrayerData = {};
+        activeListName = '';
+        alert("All prayer data has been cleared.");
+        location.reload(); // Reload the page to reset to default state
+    } catch (error) {
+        console.error("Error clearing local storage:", error);
+        alert("An error occurred while trying to clear the data.");
+    }
+}
+
+// --- Maximized View Font Size Control ---
+function setFontSize(size) {
+    maximizedContent.querySelectorAll('p').forEach(p => { p.style.fontSize = `${size}em`; });
+    // Adjust journal entry font sizes proportionally if needed
+    maximizedContent.querySelectorAll('.journal-entry strong').forEach(s => { s.style.fontSize = `${size * 0.85 / 1.2}em`; }); // Example adjustment
+    maximizedContent.querySelectorAll('.journal-entry p').forEach(p => { p.style.fontSize = `${size * 0.9 / 1.2}em`; }); // Example adjustment
+
+    // Update active button state
+    [fontSizeNormalButton, fontSizeLargeButton, fontSizeHugeButton].forEach(btn => btn.classList.remove('active-font-size'));
+    if (size === FONT_SIZE_NORMAL) fontSizeNormalButton.classList.add('active-font-size');
+    else if (size === FONT_SIZE_LARGE) fontSizeLargeButton.classList.add('active-font-size');
+    else if (size === FONT_SIZE_HUGE) fontSizeHugeButton.classList.add('active-font-size');
+}
+
+// --- Event Listeners ---
+listSelector.addEventListener('change', (event) => {
+    const newListName = event.target.value;
+    if (newListName && allPrayerData[newListName]) {
+        activeListName = newListName;
+        savePrayers(); // Save the new active list name
+        // Reset UI state for the new list
+        currentlyEditing = null;
+        visiblePrayerCount = 4;
+        currentSearchQuery = ''; searchInput.value = '';
+        currentSortCriteria = 'default';
+        priorityFilterSelect.value = 'all';
+        customTagFilterSelect.value = 'all';
+        sortOptionsSelect.value = 'default';
+        displayPrayers();
+        updateStatsDisplay();
+    } else {
+        console.error("Attempted to switch to an invalid list:", newListName);
+        listSelector.value = activeListName; // Revert selector if new list is invalid
+    }
+});
+createListButton.addEventListener('click', () => {
+    const newListName = prompt("Enter a name for the new prayer list:");
+    if (newListName) { // If user provided a name (not null)
+        const trimmedName = newListName.trim();
+        if (trimmedName === "") { alert("List name cannot be empty."); return; }
+        if (allPrayerData[trimmedName]) {
+            alert(`A list named "${trimmedName}" already exists.`);
+        } else {
+            allPrayerData[trimmedName] = { requests: [], answered: [], history: [], notGranted: [], notGrantedHistory: [], archivedActive: [] };
+            activeListName = trimmedName;
+            populateListSelector(); // Refresh and set new list as active
+            savePrayers();
+            // Reset UI for the new empty list
+            currentlyEditing = null; visiblePrayerCount = 4;
+            currentSearchQuery = ''; searchInput.value = ''; currentSortCriteria = 'default';
+            priorityFilterSelect.value = 'all'; customTagFilterSelect.value = 'all'; sortOptionsSelect.value = 'default';
+            displayPrayers(); updateStatsDisplay();
+        }
+    }
+});
+editListNameButton.addEventListener('click', renameCurrentList);
+deleteListButton.addEventListener('click', deleteCurrentList);
+searchInput.addEventListener('input', () => { currentSearchQuery = searchInput.value; visiblePrayerCount = 4; displayPrayers(); });
+priorityFilterSelect.addEventListener('change', () => { visiblePrayerCount = 4; displayPrayers(); });
+customTagFilterSelect.addEventListener('change', () => { visiblePrayerCount = 4; displayPrayers(); });
+sortOptionsSelect.addEventListener('change', (event) => { currentSortCriteria = event.target.value; displayPrayers(); });
+addPrayerButton.addEventListener('click', openAddPrayerModal);
+addPrayerForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = document.getElementById('add-name').value.trim();
+    const request = document.getElementById('add-request').value.trim();
+    const category = addCategorySelect.value;
+    const priority = addPrioritySelect.value;
+    const dateNeeded = document.getElementById('add-date').value;
+    const firstNoteText = document.getElementById('add-journal-note').value;
+    const tagsInputVal = addTagsInput.value; // Renamed to avoid conflict
+    const linkedPrayerId = addLinkSelect.value;
+    if (name && request) {
+        addPrayer(name, request, category, priority, dateNeeded, firstNoteText, tagsInputVal, linkedPrayerId);
+    } else { alert("Please fill in at least Name and Request fields."); }
+});
+cancelAddPrayerButton.addEventListener('click', closeAddPrayerModal);
+closeAddPrayerModalButton.addEventListener('click', closeAddPrayerModal);
+editPrayerForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const index = parseInt(document.getElementById('edit-index').value, 10);
+    const name = document.getElementById('edit-name').value.trim();
+    const request = document.getElementById('edit-request').value.trim();
+    const category = editCategorySelect.value;
+    const priority = editPrioritySelect.value;
+    const dateNeeded = document.getElementById('edit-date').value;
+    const status = document.getElementById('edit-status').value;
+    const tagsInputVal = editTagsInput.value; // Renamed
+    const linkedPrayerId = editLinkSelect.value;
+    if (name && request) {
+        updatePrayer(index, name, request, category, priority, dateNeeded, status, tagsInputVal, linkedPrayerId);
+    } else { alert("Please fill in at least Name and Request fields."); }
+});
+cancelEditPrayerButton.addEventListener('click', closeEditPrayerModal);
+closeEditPrayerModalButton.addEventListener('click', closeEditPrayerModal);
+showMoreButton.addEventListener('click', () => { visiblePrayerCount += prayersPerLoad; displayPrayers(); });
+viewAnsweredButton.addEventListener('click', () => { viewingHistory = false; displayAnsweredPrayersModal(); prayerHistoryDiv.style.display = 'none'; answeredPrayersModalList.style.display = 'grid'; answeredPrayersModal.style.display = 'flex'; viewHistoryButton.textContent = "History"; closeAllDropdowns(); });
+viewNotGrantedButton.addEventListener('click', () => { viewingNotGrantedHistory = false; displayNotGrantedPrayersModal(); notGrantedPrayerHistoryDiv.style.display = 'none'; notGrantedPrayersModalList.style.display = 'grid'; notGrantedPrayersModal.style.display = 'flex'; viewNotGrantedHistoryButton.textContent = "History"; closeAllDropdowns(); });
+viewArchivedActiveButton.addEventListener('click', () => { displayArchivedActiveModal(); closeAllDropdowns(); });
+exportDataButton.addEventListener('click', () => { exportData(); closeAllDropdowns(); });
+importDataButton.addEventListener('click', () => { importFileInput.click(); closeAllDropdowns(); });
+clearDataButton.addEventListener('click', () => { const message = "<strong>WARNING!</strong><br><br>Are you sure you want to clear ALL prayer lists and data?<br><br>This action cannot be undone."; showConfirmationModal(message, clearAllDataConfirmed, 'Clear All Data', 'Clear All', '#f39c12'); closeAllDropdowns(); });
+viewHistoryButton.addEventListener('click', () => { viewingHistory = !viewingHistory; if (viewingHistory) { displayHistory(); prayerHistoryDiv.style.display = 'block'; answeredPrayersModalList.style.display = 'none'; viewHistoryButton.textContent = "Answered"; } else { displayAnsweredPrayersModal(); prayerHistoryDiv.style.display = 'none'; answeredPrayersModalList.style.display = 'grid'; viewHistoryButton.textContent = "History"; } });
+closeAnsweredModalButton.addEventListener('click', closeAnsweredModal);
+viewNotGrantedHistoryButton.addEventListener('click', () => { viewingNotGrantedHistory = !viewingNotGrantedHistory; if (viewingNotGrantedHistory) { displayNotGrantedHistory(); notGrantedPrayerHistoryDiv.style.display = 'block'; notGrantedPrayersModalList.style.display = 'none'; viewNotGrantedHistoryButton.textContent = "Not Granted"; } else { displayNotGrantedPrayersModal(); notGrantedPrayerHistoryDiv.style.display = 'none'; notGrantedPrayersModalList.style.display = 'grid'; viewNotGrantedHistoryButton.textContent = "History"; } });
+closeNotGrantedModalButton.addEventListener('click', closeNotGrantedModal);
+closeArchivedActiveModalButton.addEventListener('click', closeArchivedActiveModal);
+importFileInput.addEventListener('change', handleImport);
+closeMaximizedModalButton.addEventListener('click', closeMaximizedModal);
+fontSizeNormalButton.addEventListener('click', () => setFontSize(FONT_SIZE_NORMAL));
+fontSizeLargeButton.addEventListener('click', () => setFontSize(FONT_SIZE_LARGE));
+fontSizeHugeButton.addEventListener('click', () => setFontSize(FONT_SIZE_HUGE));
+confirmDeleteButton.addEventListener('click', () => { if (typeof currentConfirmAction === 'function') { currentConfirmAction(); } hideConfirmationModal(); });
+cancelDeleteButton.addEventListener('click', () => { hideConfirmationModal(); });
+closeConfirmationModalButton.addEventListener('click', () => { hideConfirmationModal(); });
+toggleStatsButton.addEventListener('click', toggleStatsDisplay);
+
+// Fullscreen Button Event Listener
+if (fullscreenToggleButton) {
+    fullscreenToggleButton.addEventListener('click', toggleAppFullScreen);
+
+    // Listen for fullscreen changes (e.g., user presses ESC) to update button
+    document.addEventListener('fullscreenchange', updateFullscreenButtonUI);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButtonUI); // Safari
+    document.addEventListener('mozfullscreenchange', updateFullscreenButtonUI);    // Firefox
+    document.addEventListener('MSFullscreenChange', updateFullscreenButtonUI);     // IE/Edge
+}
+
+// --- Initial Load ---
+loadPrayers(); // Load data and initialize UI
+updateFullscreenButtonUI(); // Set initial state of the fullscreen button
+
+
+    </script>
+</body>
+</html>
